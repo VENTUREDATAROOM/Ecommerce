@@ -33,19 +33,19 @@ public class MobileService {
 
 	}
 
-	public boolean VerifyOtp(VerifyMobileOtpDto verifyMobileOtpDto) {
+	public boolean verifyOtp(VerifyMobileOtpDto verifyMobileOtpDto) {
 		try {
 			String mobileNumber=verifyMobileOtpDto.getMobileNumber();
 			String enteredOtp=verifyMobileOtpDto.getEnteredOtp();
 			String storedOtp = mp.get(mobileNumber);
 			if (storedOtp != null && storedOtp.equals(enteredOtp)) {
-				return true; // OTP is valid
+				return true;
 			} else {
-				return false; // Invalid OTP
+				return false;
 			}
 		} catch (Exception e) {
 			log.error("An error occurred during OTP verification: {}", e.getMessage());
-			return false; // Handle the exception gracefully
+			return false;
 		}
 	}
 

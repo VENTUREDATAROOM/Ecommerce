@@ -28,7 +28,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/auth")
+@RequestMapping("api")
 @Tag(name = "Aadhar-API")
 public class AadharController {
 

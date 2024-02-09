@@ -14,7 +14,7 @@ import com.sellerapp.repository.PancardRepo;
 @Service
 public class PancardService {
 	@Autowired
-	PancardRepo pancardRepo;
+	private PancardRepo pancardRepo;
 	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PancardService.class);
 
 
@@ -37,10 +37,14 @@ public class PancardService {
 			log.error("IO Exception while reading or saving the pancard photo: " + ioException.getMessage(), ioException);
 			return "Error";
 		}
+		catch (Exception e) {
+			log.error("Error occurred while saving pancard details: " + e.getMessage(), e);
+			return "Error";
+		}
 
 	}
 	public boolean verifyPancardNumber(PancardDto pan)
 	{
-		return pan!=null && pan.getPancardNumber()!=null && pan.getPancardNumber().length()==10;
+		return pan!=null && pan.getPancardNumber()!=null && pan.getPancardNumber().length()==20;
 	}
 }

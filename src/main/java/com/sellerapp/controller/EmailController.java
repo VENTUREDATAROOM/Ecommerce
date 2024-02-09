@@ -28,21 +28,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/auth")
 @Tag(name = "EmailOTP-API")
 public class EmailController {
-	
-	
+
+
 	@Autowired
 	private EmailService emailService;
-  
+
 	//private Random random=new Random();
-	
+
 	@PostMapping("/sendemail")
 	 public ResponseEntity<?>  sendEmail(@Valid @RequestBody EmailRequest request)
 	 {
-		 
+
 		 boolean  res=emailService.sendEmail(request.getSubject(), request.getMessage(), request.getTo());
         if(res)
          {
-		 
+
 		 return Response2.generateResponse("Email is sent successfully",HttpStatus.OK, "200");
 	   }
       else
@@ -51,8 +51,8 @@ public class EmailController {
       }
 	 }
 }*/
-	 
-  /*/
+
+/*/
  /*@PostMapping("sendotp")
 	public ResponseEntity<String> sendOTP(@RequestParam String email)
 	{
@@ -70,7 +70,7 @@ public class EmailController {
 		{
 			return Response2.generateResponse("Wrong email id",HttpStatus.INTERNAL_SERVER_ERROR, "500");
 		}
-	
+
 }*/
 
 

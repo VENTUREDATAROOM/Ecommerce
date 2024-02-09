@@ -36,7 +36,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin("*")
 @RequestMapping("/auth")
 @Tag(name = "Login-API")
 public class JwtAuthenticationController {
@@ -52,7 +52,7 @@ public class JwtAuthenticationController {
 
 	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JwtAuthenticationController.class);
 
-	
+
 	// for json
 	@PostMapping(value = "/authenticatebyjson")
 	@Operation(summary = "login apip for the user  for the login ")
@@ -107,4 +107,4 @@ public class JwtAuthenticationController {
 	}
 }
 
- 
+

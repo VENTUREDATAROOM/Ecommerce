@@ -5,8 +5,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Table;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="otp_sign_in")
@@ -15,12 +15,12 @@ public class OtpEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="otp_id")
-	private Long Id;
-    @Column(name="user_name")
+	private Long id;
+	@Column(name="user_name")
 	private String username;
-    @Column(name="user_code")
+	@Column(name="user_code")
 	private String userCode;
-    @Column(name="email")
+	@Column(name="email")
 	private String email;
 	@Column(name="otp")
 	private String otp;
@@ -28,7 +28,7 @@ public class OtpEntity {
 	private String password;
 	@Column(name="otp_send")
 	private String otpSend;
-	
+
 	@Column(name="otp_expiry")
 	private String otpExpiry;
 	public String getUsername() {
@@ -43,11 +43,11 @@ public class OtpEntity {
 	public void setUserCode(String userCode) {
 		this.userCode = userCode;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	public String getPassword() {
 		return password;
 	}
@@ -79,14 +79,14 @@ public class OtpEntity {
 		this.email = email;
 	}
 	public Long getId() {
-		return Id;
+		return id;
 	}
 	public void setId(Long id) {
-		Id = id;
+		this.id = id;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 }

@@ -16,8 +16,16 @@ public class OtpSignDto {
 		this.username = username;
 		this.email = email;
 	}
+	public OtpSignDto() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	public String getUsername() {
 		return username;
+	}
+	@Override
+	public String toString() {
+		return "OtpSignDto [userCode=" + userCode + ", username=" + username + ", email=" + email + "]";
 	}
 	public void setUsername(String username) {
 		this.username = username;

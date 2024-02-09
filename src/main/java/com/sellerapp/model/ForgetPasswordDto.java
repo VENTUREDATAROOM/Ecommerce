@@ -5,8 +5,8 @@ package com.sellerapp.model;
 public class ForgetPasswordDto {
 	private String userCode;
 	private String username;
-
 	private String password;
+
 	public String getUserCode() {
 		return userCode;
 	}
@@ -25,6 +25,7 @@ public class ForgetPasswordDto {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
 
 
 

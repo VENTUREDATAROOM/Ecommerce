@@ -1,6 +1,6 @@
 package com.sellerapp.controller;
 
-import javax.validation.Valid;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 //import io.swagger.v3.oas.models.media.MediaType;
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/auth")
+@RequestMapping("api")
 @Tag(name = "Pancard-API")
 public class PancardController {
 
@@ -32,19 +32,20 @@ public class PancardController {
 
 	@Autowired
 	PancardService pancardService;
-	@PostMapping(value="/uploadPancardDetails",consumes=MediaType.MULTIPART_FORM_DATA_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value="/uploadPancard",consumes=MediaType.MULTIPART_FORM_DATA_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary ="upload pan card details  through pan number")
-	public ResponseEntity<?> uploadPancardphoto(@Valid @RequestParam("pic") MultipartFile pic, @RequestBody PancardDto pan)
+	public ResponseEntity<?> uploadPancardphoto(@RequestParam("pic") MultipartFile pic, @RequestBody PancardDto pan)
 	{
+
 		String responsesave=pancardService.savepancardphoto(pic,pan);
 		if("Success".equals(responsesave))
 		{
-			return  Response2.generateResponse("Pancard details are uploaded",HttpStatus.OK,"200");
+			return   Response2.generateResponse("Pancard details are uploaded",HttpStatus.OK,"200");
 
 		}
 		else if("Error".equals(responsesave))
 		{
-			return Response2.generateResponse("Error", HttpStatus.BAD_REQUEST, "400");
+			return  Response2.generateResponse("Error", HttpStatus.BAD_REQUEST, "400");
 		}
 		else
 		{
@@ -52,7 +53,7 @@ public class PancardController {
 
 		}
 	}
-	@PostMapping(value ="/verifyPanCard",produces=MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value ="/verifyPancard",produces=MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary="verify pan card number")
 	public ResponseEntity<?> verifyPancard(@RequestBody PancardDto pan) {
 		boolean isValid = pancardService.verifyPancardNumber(pan);

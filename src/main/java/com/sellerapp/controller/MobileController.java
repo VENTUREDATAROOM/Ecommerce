@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/auth")
+@RequestMapping("api")
 @Tag(name = "MobileOTP-API")
 public class MobileController {
 
@@ -31,9 +31,9 @@ public class MobileController {
 
 
 
-	@PostMapping("/sendOtp")
+	@PostMapping(value="/sendOtp")
 	@Operation(summary="send an otp through mobile number")
-	public ResponseEntity<Object> sendanOtp(@RequestParam String mobileNumber)
+	public ResponseEntity<Object> sendAnOtp(@RequestParam String mobileNumber)
 
 	{
 		String result=mobileService.sendOtp(mobileNumber);
@@ -47,13 +47,13 @@ public class MobileController {
 		}
 
 	}
-	@PostMapping("/verifyotp")
+	@PostMapping(value="/verifyOtp")
 	@Operation(summary="to verify an otp through mobile number")
 	public ResponseEntity<Object> verifyAnOtp(@RequestBody VerifyMobileOtpDto verifyMobileOtpDto) {
 
 
 
-		boolean otpIsValid = mobileService.VerifyOtp(verifyMobileOtpDto);
+		boolean otpIsValid = mobileService.verifyOtp(verifyMobileOtpDto);
 		if (otpIsValid) {
 
 			return Response2.generateResponse("OTP is valid", HttpStatus.OK, "200");
@@ -63,18 +63,5 @@ public class MobileController {
 		}
 	}
 
-	/*	@PostMapping("/verifyotp")
-	public ResponseEntity<Object>  verifyanotp(@RequestParam String mobileNumber, @RequestParam String enteredOtp)
-	{
 
-		boolean otpisValid=mobileService.verifyOtp(mobileNumber,enteredOtp);
-		if(otpisValid)
-		{
-			return Response2.generateResponse("OTP is valid",HttpStatus.OK, "200");
-		}
-		else
-		{
-			return Response2.generateResponse("Invalid OTP",HttpStatus.BAD_REQUEST, "400");
-		}
-	}*/
 }

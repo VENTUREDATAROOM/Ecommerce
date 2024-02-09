@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sellerapp.entity.OtpEntity;
-import com.sellerapp.model.OtpSignDto;
-import com.sellerapp.model.VerifyOtpRequest;
+import com.sellerapp.model.VerifyOtpDto;
 import com.sellerapp.repository.UserRepository;
 @Service
 public class OtpService {
@@ -27,17 +26,20 @@ public class OtpService {
 	@Autowired
 	ModelMapper mapper;
 
-	public String otpSignin(OtpSignDto otpsignDto)
+	public String otpSignin(String userCode, String username, String email)
 	{
 		try
 		{
-			String userCode = otpsignDto.getUserCode();
-			String email = otpsignDto.getEmail();
-			String username = otpsignDto.getUsername();
+			//String userCode = otpsignDto.getUserCode();
+			//String email = otpsignDto.getEmail();
+			//String username = otpsignDto.getUsername();
 
 			String otp=generateRandomOtp();
-			OtpEntity oe=mapper.map(otpsignDto,OtpEntity.class);
-			//OtpEntity oe=new OtpEntity();
+
+			OtpEntity oe=new OtpEntity();
+			oe.setUserCode(userCode);
+			oe.setUsername(username);
+			oe.setEmail(email);
 
 			oe.setOtp(otp);
 			LocalDateTime currentDateTime=LocalDateTime.now();
@@ -56,10 +58,10 @@ public class OtpService {
 			String otpExpiryString= otpExpiryStringFormatted.format(formater);
 
 			oe.setOtpExpiry(otpExpiryString);
-			oe=userRepository.saveAndFlush(oe);
-			//String email=otpsignDto.getEmail();
+			oe=userRepository.save(oe);
+
 			sendOtpByEmail(email,otp);
-			//sendAttachByEmail(email,otp);
+
 			//sendVerificationEmail(email);
 
 
@@ -71,7 +73,7 @@ public class OtpService {
 			return "Error";
 		}
 	}
-	public String  verifyOtp(VerifyOtpRequest request)
+	public String  verifyOtp(VerifyOtpDto request)
 
 	{     try
 	{
@@ -130,25 +132,19 @@ public class OtpService {
 		return String.valueOf(otpValue);
 	}
 
-	private  void sendOtpByEmail(String email,String otp)
-	{
-		String subject="OTP verification";
-		String message ="<html><body>"
-				+ "<p>Dear Gorank,</p>"
+	private void sendOtpByEmail(String email, String otp) {
+
+		String subject = "OTP verification";
+		String message = "<html><body>"
+				+ "<p>Dear User,</p>"
 				+ "<p>Your OTP for verification is: <strong>" + otp + "</strong></p>"
-				+ "<p>Please use this OTP within 1 minute to reset your password.</p>"
-				+ "<p>If you are unable to change the password within 1 minute of OTP generation, please click on 'Forgot Password' and continue with the same process again.</p>"
-				+ "<p>Wish you all the best!</p>"
-				+ "<br>"
-				+ "<p>Regards,<br>"
-				+ "Campus Recruitment Team<br>"
-				+ "Venture Consultancy Service, Lucknow</p>"
+				+ "<p>Please use this OTP within 1 minute to complete your verification process.</p>"
+				+ "<p>If you didn't request this OTP, please ignore this email.</p>"
+				+ "<p>Best regards,</p>"
+				+ "<p>Venture Consulting Services</p>"
 				+ "</body></html>";
-		emailService.sendEmail(subject,message,email);
 
+
+		emailService.sendEmail(subject, message, email);
 	}
-
-
-
-
 }

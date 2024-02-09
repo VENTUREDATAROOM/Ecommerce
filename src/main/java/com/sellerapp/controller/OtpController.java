@@ -9,12 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sellerapp.model.EmailDto;
 import com.sellerapp.model.OtpSignDto;
 import com.sellerapp.model.Response2;
-import com.sellerapp.model.VerifyOtpRequest;
+import com.sellerapp.model.VerifyOtpDto;
 import com.sellerapp.service.EmailService;
 import com.sellerapp.service.OtpService;
 
@@ -23,17 +23,18 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/auth")
+@RequestMapping("api")
 @Tag(name = "EmailOTP-API")
 public class OtpController {
 
+	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OtpController.class);
 	@Autowired
 	OtpService otpService;
 	@Autowired
 	EmailService emailService;
-	@PostMapping("VerifyOtp")
+	@PostMapping("verifyAnOtp")
 	@Operation(summary="verify the otp through email")
-	public ResponseEntity<?> Verifyotp(@Valid @RequestBody VerifyOtpRequest request) {
+	public ResponseEntity<?> Verifyotp(@Valid @RequestBody VerifyOtpDto request) {
 		String result = otpService.verifyOtp(request);
 
 		if ("Success".equals(result)) {
@@ -44,31 +45,31 @@ public class OtpController {
 			return Response2.generateResponse(result, HttpStatus.INTERNAL_SERVER_ERROR, "500");
 		}
 	}
-	@PostMapping("/sendEmail")
+	@PostMapping(value="/sendEmail")
 	@Operation(summary="otp sign in through email")
-	public ResponseEntity<?> OtpSignIn(@RequestBody OtpSignDto otpsignDto) {
+	public ResponseEntity<?> sendEmail(@Valid @RequestBody OtpSignDto otpsignDto) {
 
+		log.info("Received otpsignDto : {} {} {} ",otpsignDto.getUserCode(),otpsignDto.getUsername(),otpsignDto.getEmail());
+		String result = otpService.otpSignin(otpsignDto.getUserCode(),otpsignDto.getUsername(),otpsignDto.getEmail());
 
-		String savedotp = otpService.otpSignin(otpsignDto);
-
-		if (savedotp!= null) {
-			return Response2.generateResponse(savedotp, HttpStatus.OK, "200");
+		if ("Success".equals(result)) {
+			return Response2.generateResponse("Email sent successfully through OTP", HttpStatus.OK, "200");
 		} else {
-			return Response2.generateResponse(null, HttpStatus.INTERNAL_SERVER_ERROR, "500");
+			return   Response2.generateResponse("Failed to send email", HttpStatus.INTERNAL_SERVER_ERROR, "500");
 		}
 	}
-	@PostMapping("/verifyEmail")
+	@PostMapping(value="/verifyEmail")
 	@Operation(summary="verification  email")
-	public ResponseEntity<?> verificationEmail(@RequestParam String email) {
-
+	public ResponseEntity<?> verificationEmail(@RequestBody EmailDto emailDto) {
+		String email=emailDto.getEmail();
 		boolean verificationsuccess=sendVerificationEmail(email);
 		if(verificationsuccess)
 		{
-			return Response2.generateResponse("Email verified successfully", HttpStatus.OK, "200");
+			return  Response2.generateResponse("Email verified successfully", HttpStatus.OK, "200");
 		}
 		else
 		{
-			return Response2.generateResponse("Email is not verified successfully", HttpStatus.BAD_REQUEST, "400");
+			return  Response2.generateResponse("Email is not verified successfully", HttpStatus.BAD_REQUEST, "400");
 		}
 
 	}
@@ -92,7 +93,7 @@ public class OtpController {
 				    "</html>";
 
 		//emailService.sendEmail(subject, message, email);
-		emailService.sendEmail(subject, message, email);
-		return true;
+		boolean res=emailService.sendEmail(subject, message, email);
+		return res;
 	}
 }
