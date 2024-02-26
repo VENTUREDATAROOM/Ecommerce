@@ -27,6 +27,8 @@ public class GdmsApiUsers {
 	private String password;
 	@Column(name = "user_code")
 	private String userCode;
+	@Column(name="otp")
+	private String otp;
 
 	public String getUserCode() {
 		return userCode;
@@ -67,5 +69,24 @@ public class GdmsApiUsers {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getOtp() {
+		return otp;
+	}
+
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
+
+	
+	
 
 }

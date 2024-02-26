@@ -1,4 +1,4 @@
-package com.sellerapp.controller;
+/*package com.sellerapp.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,16 +6,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sellerapp.model.MobileOtpDTO;
 import com.sellerapp.model.Response2;
-import com.sellerapp.model.VerifyMobileOtpDto;
+import com.sellerapp.model.VerifyMobileOtpDTO;
 import com.sellerapp.service.MobileService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @CrossOrigin(origins = "*")
@@ -33,10 +35,12 @@ public class MobileController {
 
 	@PostMapping(value="/sendOtp")
 	@Operation(summary="send an otp through mobile number")
-	public ResponseEntity<Object> sendAnOtp(@RequestParam String mobileNumber)
+	public ResponseEntity<?> sendAnOtp(@RequestBody MobileOtpDTO mobileOtpDto)
 
 	{
-		String result=mobileService.sendOtp(mobileNumber);
+		System.out.println("Received MobileOtp is {} : "+mobileOtpDto.getMobileNumber());
+
+		String result=mobileService.sendOtp(mobileOtpDto);
 		if("Success".equals(result))
 		{
 			return Response2.generateResponse("Mobile number is already there",HttpStatus.OK, "200");
@@ -49,7 +53,7 @@ public class MobileController {
 	}
 	@PostMapping(value="/verifyOtp")
 	@Operation(summary="to verify an otp through mobile number")
-	public ResponseEntity<Object> verifyAnOtp(@RequestBody VerifyMobileOtpDto verifyMobileOtpDto) {
+	public ResponseEntity<Object> verifyAnOtp(@RequestBody VerifyMobileOtpDTO verifyMobileOtpDto) {
 
 
 
@@ -64,4 +68,4 @@ public class MobileController {
 	}
 
 
-}
+}*/

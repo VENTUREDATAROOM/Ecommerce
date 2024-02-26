@@ -1,13 +1,15 @@
 package com.sellerapp.model;
 
-public class VerifyOtpDto {
-	private String userCode;
+public class VerifyOtpDTO {
+	private String username;
 	private String otp;
-	public String getUserCode() {
-		return userCode;
+	
+	
+	public String getUsername() {
+		return username;
 	}
-	public void setUserCode(String userCode) {
-		this.userCode = userCode;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	public String getOtp() {
 		return otp;

@@ -29,8 +29,7 @@ public class RegistrationController {
 	@Autowired
 	private RegistrationService registrationService;
 	@PostMapping(value = "/registerToApp")
-
-	public ResponseEntity<?> registration(@Valid @RequestBody RegisterModel reg) {
+    public ResponseEntity<?> registration(@Valid @RequestBody RegisterModel reg) {
 
 		String mobileStatus = registrationService.findByMobile(reg);
 		if ("A".equals(mobileStatus)) {
@@ -41,7 +40,7 @@ public class RegistrationController {
 			if (regResponse.equalsIgnoreCase("existing")) {
 				return Response2.generateResponse("User already exist ", HttpStatus.FOUND, "302");
 			} else if (regResponse.equalsIgnoreCase("Error")) {
-				return Response2.generateResponse("Something wnet wrong", HttpStatus.OK, "200");
+				return Response2.generateResponse("Something went wrong", HttpStatus.OK, "200");
 			} else {
 				return Response2.generateResponse("Successfully register", HttpStatus.OK, "200");
 			}
