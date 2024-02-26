@@ -4,19 +4,39 @@ import java.io.Serializable;
 
 public class JwtRequest implements Serializable {
 	private static final long serialVersionUID = 5926468583005150707L;
-	String mobile;
-	String password;
+	private String mobileNumber;
+	private String password;
+    private String otpgen;
+
+	
+
+	
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 
 	public JwtRequest() {
 
 	}
+	
+	
+	
 
-	public String getMobile() {
-		return mobile;
+	public String getOtpgen() {
+		return otpgen;
 	}
 
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
+	public void setOtpgen(String otpgen) {
+		this.otpgen = otpgen;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	public String getPassword() {
@@ -27,9 +47,9 @@ public class JwtRequest implements Serializable {
 		this.password = password;
 	}
 
-	public JwtRequest(String mobile, String password) {
+	public JwtRequest(String mobileNumber, String password) {
 		super();
-		this.mobile = mobile;
+		this.mobileNumber = mobileNumber;
 		this.password = password;
 	}
 
