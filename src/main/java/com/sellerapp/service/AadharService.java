@@ -1,15 +1,20 @@
 package com.sellerapp.service;
 
-import java.io.IOException;
+
+
+
 import java.util.Base64;
-//import java.util.List;
+
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
+//import org.springframework.web.multipart.MultipartFile;
 
 import com.sellerapp.entity.AadharEntity;
-import com.sellerapp.model.AadharDto;
+import com.sellerapp.model.AadharDTO;
+
 import com.sellerapp.repository.AadharRepository;
 @Service
 public class AadharService {
@@ -19,39 +24,40 @@ public class AadharService {
 	@Autowired
 	AadharRepository aadharRepo;
 	
-	public String saveAadharDetails(MultipartFile frontPage,MultipartFile backPage,AadharDto aadhar)
+	public String saveAadharDetails(AadharDTO aadhar) {
+	    try {
+	       // AadharEntity aadharEntity = aadharRepo.findByAadharNumber(aadhar.getAadharNumber());
+	        /*if (aadharEntity == null) {
+	            aadharEntity = new AadharEntity();
+	            aadharEntity.setAadharNumber(aadhar.getAadharNumber());
+	        }*/
+           
+	        String frontPagefilename= aadhar.getFrontPage().getOriginalFilename();
+	        Base64.getEncoder().encodeToString(aadhar.getFrontPage().getBytes());
+	       // byte[] frontPageBytes = frontPage.getBytes();
+	        //String frontPageBase64 = Base64.getEncoder().encodeToString(frontPageBytes);
+	        //aadharEntity.setFrontPage(frontPageBase64);
 
-	{
-		try
-		{
-		    AadharEntity aadharentity=aadharRepo.findByAadharNumber(aadhar.getAadharNumber());
-		    if(aadharentity==null)
-		    {
-		    aadharentity=new AadharEntity();
-		    aadharentity.setAadharNumber(aadhar.getAadharNumber());
-		    }
-			//byte[] bytes=frontPage.getBytes();
-			//String base64Image= Base64.getEncoder().encodeToString(bytes);
-		    if(frontPage!=null)
-		    {
-			aadharentity.setFrontPage(Base64.getEncoder().encode(frontPage.getBytes()));
-		    }
-		    if(backPage!=null)
-		    {
-		    	aadharentity.setBackPage(Base64.getEncoder().encode(backPage.getBytes()));	
-		    }
-			aadharRepo.save(aadharentity);
-           log.info("Aadhar details saved successfully");
-			 return "Success";
-		} catch (IOException ioException) {
-		       log.error("IO Exception while reading or saving the pancard photo: " + ioException.getMessage(), ioException);
-		        return "Error";
-		   }
-		    
+	        //MultipartFile backPage = aadhar.getBackPage(); 
+	        //byte[] backPageBytes = backPage.getBytes();
+	        //String backPageBase64 = Base64.getEncoder().encodeToString(backPageBytes);
+	        //aadharEntity.setBackPage(backPageBase64);
+
+	        //aadharRepo.save(aadharEntity);
+	        System.out.println("The aadhar details are saved: " +frontPagefilename);
+	        //log.info("Aadhar details saved successfully");
+	        return "Success";
+	    } 
+	     catch (Exception e) {
+	    	 e.printStackTrace();
+	        log.error("Exception while saving the Aadhar card photo: " + e.getMessage(),e);
+	        return "Error";
+	    }
 	}
 
+	public boolean verifyAadharNumber(AadharDTO aadhar)
+	{
+		return aadhar!=null && aadhar.getAadharNumber()!=null && aadhar.getAadharNumber().length()==12;
 	
-	
-	
-	
+	}
 }

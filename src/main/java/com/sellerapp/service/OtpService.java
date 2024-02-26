@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sellerapp.entity.OtpEntity;
-import com.sellerapp.model.VerifyOtpDto;
+
+import com.sellerapp.model.OtpSignDTO;
+import com.sellerapp.model.VerifyOtpDTO;
 import com.sellerapp.repository.UserRepository;
 @Service
 public class OtpService {
@@ -26,7 +28,7 @@ public class OtpService {
 	@Autowired
 	ModelMapper mapper;
 
-	public String otpSignin(String userCode, String username, String email)
+	public String otpSignin(OtpSignDTO otpsignDTO)
 	{
 		try
 		{
@@ -37,9 +39,9 @@ public class OtpService {
 			String otp=generateRandomOtp();
 
 			OtpEntity oe=new OtpEntity();
-			oe.setUserCode(userCode);
-			oe.setUsername(username);
-			oe.setEmail(email);
+			
+			oe.setUsername(otpsignDTO.getUsername());
+			oe.setEmail(otpsignDTO.getEmail());
 
 			oe.setOtp(otp);
 			LocalDateTime currentDateTime=LocalDateTime.now();
@@ -60,12 +62,12 @@ public class OtpService {
 			oe.setOtpExpiry(otpExpiryString);
 			oe=userRepository.save(oe);
 
-			sendOtpByEmail(email,otp);
+			sendOtpByEmail(otpsignDTO.getEmail(),otp);
 
 			//sendVerificationEmail(email);
 
 
-			log.info("Otp sign in " +userCode+","+username+","+email);
+			log.info("Otp sign in "+otpsignDTO.getUsername()+","+otpsignDTO.getEmail());
 			return "Success";
 		}catch(Exception e)
 		{
@@ -73,11 +75,11 @@ public class OtpService {
 			return "Error";
 		}
 	}
-	public String  verifyOtp(VerifyOtpDto request)
+	public String  verifyOtp(VerifyOtpDTO request)
 
 	{     try
 	{
-		Optional<OtpEntity> otpOptional=userRepository.findByUserCodeAndOtp(request.getUserCode(),request.getOtp());
+		Optional<OtpEntity> otpOptional=userRepository.findByUsernameAndOtp(request.getUsername(),request.getOtp());
 		if (otpOptional.isPresent())
 		{
 			OtpEntity oe=otpOptional.get();
@@ -106,8 +108,8 @@ public class OtpService {
 				}
 				oe.setOtpExpiry(otpexpiry);
 				userRepository.saveAndFlush(oe);
-				System.out.println("Verify otp" +request.getUserCode()+","+request.getOtp());
-				log.info("Verify otp : " + request.getUserCode() + ", " + request.getOtp());
+				System.out.println("Verify otp" +request.getUsername()+","+request.getOtp());
+				log.info("Verify otp : " + request.getUsername() + ", " + request.getOtp());
 				return "Success";
 			}
 			else
@@ -147,4 +149,28 @@ public class OtpService {
 
 		emailService.sendEmail(subject, message, email);
 	}
+	/*private boolean  sendVerificationEmail(EmailDto emailDto)
+	{
+		String email=emailDto.getEmail();
+		String subject = "Verify your email";
+		String message = "<html>" +
+				"<body>" +
+				"<p>Hello,</p>" +
+
+				    "<p>You receive this message either because you recently applied to, registered on our website, or are considered as a potential candidate for a job offered through our portal.</p>" +
+
+				    "<p>Please validate your email address by clicking <a href=\"YOUR_VALIDATION_LINK\">here</a> (please log in using your existing credentials).<br>" +
+				    "This will take only a few seconds and is to make sure that the recruiters can safely reach you through email.</p>" +
+
+				    "<p>Kind regards,<br>" +
+				    "Recruitment Team<br>" +
+				    "Venture Consultancy Services, Lucknow</p>" +
+
+				    "</body>" +
+				    "</html>";
+
+		//emailService.sendEmail(subject, message, email);
+		boolean res=emailService.sendEmail(subject, message, email);
+		return res;
+	}*/
 }

@@ -7,16 +7,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.Random;
 
-//import org.modelmapper.ModelMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.sellerapp.entity.GdmsApiUsers;
 import com.sellerapp.entity.OtpEntity;
-import com.sellerapp.model.ForgetPasswordDto;
-import com.sellerapp.model.ResetPasswordDto;
-import com.sellerapp.model.VerifyOtpDto;
+import com.sellerapp.model.ForgetPasswordDTO;
+import com.sellerapp.model.ChangePasswordDTO;
+import com.sellerapp.model.VerifyOtpDTO;
 import com.sellerapp.repository.GdmsApiRepository;
 import com.sellerapp.repository.UserRepository;
 
@@ -29,43 +29,64 @@ public class PasswordService {
 	@Autowired
 	private GdmsApiRepository gdmsRepository;
 
-	//@Autowired
-	//ModelMapper mapper;
-
+	
 
 	@Autowired
 	private PasswordEncoder bcryptEncoder;
 	@Autowired
 	private UserRepository userRepository;
 
-	public String resetpassword(ResetPasswordDto resetpasswordDto)
+	public String changePassword(ChangePasswordDTO changePasswordDTO)
 	{
 		try
 		{
-			if(!resetpasswordDto.getNewPassword().equals(resetpasswordDto.getConfirmPassword())) {
+			/*if(!resetPasswordDTO.getNewPassword().equals(resetPasswordDTO.getConfirmPassword())) {
 				return "pass word did not match";
-			}
+			}*/
 
 
-			GdmsApiUsers us=gdmsRepository.findByUserCode(resetpasswordDto.getUserCode());
-			if(us==null)
+			/*Optional<GdmsApiUsers> us=gdmsRepository.findByMobileNumber(resetPasswordDTO.getMobileNumber());
+			if(!us.isPresent())
 			{
 				return "User not found";
 			}else {
-				String originalHashPassword=bcryptEncoder.encode(resetpasswordDto.getOriginalPassword());
-				String newHashPassword=bcryptEncoder.encode(resetpasswordDto.getNewPassword());
-
-				if(originalHashPassword.equals(us.getPassword())) {
-					us.setPassword(newHashPassword);
-					us=gdmsRepository.saveAndFlush(us);
-					System.out.println("Password resent successfully" +resetpasswordDto.getUserCode());
-					log.info("password succes changed for the user .{}",resetpasswordDto.getUserCode());
-					return "Success";
-
-				}else {
+				GdmsApiUsers user=us.get();
+				String originalPassword=resetPasswordDTO.getOriginalPassword();
+				if(!bcryptEncoder.matches(originalPassword, user.getPassword()))
+				{
 					return "old password does not match";
 				}
+				String newHashPassword=bcryptEncoder.encode(resetPasswordDTO.getNewPassword());
+
+
+				user.setPassword(newHashPassword);
+				gdmsRepository.save(user);
+				System.out.println("Password resent successfully" +resetPasswordDTO.getMobileNumber());
+				log.info("password success changed for the user .{}",resetPasswordDTO.getMobileNumber());
+				return "Success";
+
+			}*/
+			String mobileNumber=changePasswordDTO.getMobileNumber();
+			String oldPassword=changePasswordDTO.getOldPassword();
+			String newPassword=changePasswordDTO.getNewPassword();
+			Optional<GdmsApiUsers> us=gdmsRepository.findByMobileNumber(mobileNumber);
+			GdmsApiUsers user=us.get();
+			if(user==null)
+			{
+				return "User was not found";
 			}
+			
+			if(!bcryptEncoder.matches(oldPassword, user.getPassword()))
+			{
+				return "Incorrect Old Password ";
+			}
+			String newHashPassword=bcryptEncoder.encode(newPassword);
+			user.setPassword(newHashPassword);
+			gdmsRepository.save(user);
+			System.out.println("Password Update successfully" +mobileNumber);
+			log.info("Password success changed for the user .{}{}",mobileNumber);
+			return "Success";
+
 
 
 
@@ -74,7 +95,7 @@ public class PasswordService {
 			return "Error";
 		}
 	}
-	public String otpSignin(ForgetPasswordDto forgetpassswordDto)
+	public String otpSignin(ForgetPasswordDTO forgetPassswordDTO)
 	{
 		try
 		{
@@ -82,9 +103,9 @@ public class PasswordService {
 			OtpEntity oe=new OtpEntity();
 			if(oe!=null)
 			{
-				oe.setUserCode(forgetpassswordDto.getUserCode());
-				oe.setUsername(forgetpassswordDto.getUsername());
-				oe.setPassword(bcryptEncoder.encode(forgetpassswordDto.getPassword()));
+				
+				oe.setUsername(forgetPassswordDTO.getUsername());
+				//oe.setPassword(bcryptEncoder.encode(forgetpassswordDto.getPassword()));
 				oe.setOtp(otp);
 				LocalDateTime currentDateTime=LocalDateTime.now();
 				LocalDateTime otpSendStringFormatted = currentDateTime.plusMinutes(1);
@@ -108,7 +129,7 @@ public class PasswordService {
 				//sendVerificationEmail(email);
 				//sendPasswordOtp(username,otp);
 			}
-			log.info("Otp sign in " +forgetpassswordDto.getUserCode()+","+forgetpassswordDto.getUsername()+","+forgetpassswordDto.getPassword());
+			log.info("Otp sign in " +forgetPassswordDTO.getUsername());
 			return "Success";
 
 
@@ -124,14 +145,14 @@ public class PasswordService {
 		int otpValue = 100000 + random.nextInt(900000);
 		return String.valueOf(otpValue);
 	}
-	public String verifyOtp(VerifyOtpDto verifyotpDto)
+	public String verifyOtp(VerifyOtpDTO verifyOtpDTO)
 	{
 		try {
 
-			String userCode = verifyotpDto.getUserCode();
-			String otp = verifyotpDto.getOtp();
+			String username = verifyOtpDTO.getUsername();
+			String otp = verifyOtpDTO.getOtp();
 
-			Optional<OtpEntity> otpOptional = userRepository.findByUserCodeAndOtp(userCode, otp);
+			Optional<OtpEntity> otpOptional = userRepository.findByUsernameAndOtp(username, otp);
 			if (otpOptional.isPresent()) {
 				OtpEntity oe = otpOptional.get();
 				if (otp.equals(oe.getOtp()) && oe.getOtpExpiry() != null) {
@@ -141,18 +162,18 @@ public class PasswordService {
 					LocalDateTime currentDateTime = LocalDateTime.now();
 
 					if (otpExpiryDateTime.isAfter(currentDateTime)) {
-						log.info("OTP verification successful for user: {}", userCode);
+						log.info("OTP verification successful for user: {}", username);
 						return "Success";
 					} else {
-						log.info("OTP has expired for user: {}", userCode);
+						log.info("OTP has expired for user: {}", username);
 						return "Invalid OTP: OTP has expired";
 					}
 				} else {
-					log.info("Invalid OTP for user: {}", userCode);
+					log.info("Invalid OTP for user: {}", username);
 					return "Invalid OTP: OTP mismatch";
 				}
 			} else {
-				log.info("User not found: {}", userCode);
+				log.info("User not found: {}", username);
 				return "User not found";
 			}
 		} catch (Exception e) {

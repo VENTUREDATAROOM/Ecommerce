@@ -1,59 +1,93 @@
 package com.sellerapp.service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.sellerapp.model.VerifyMobileOtpDto;
+import com.sellerapp.entity.GdmsApiUsers;
+import com.sellerapp.repository.GdmsApiRepository;
+
+import com.sellerapp.entity.GdmsApiUsers;
+import com.sellerapp.model.JwtRequest;
+//import com.sellerapp.repository.GdmsApiRepository;
+import java.lang.String;
+import java.util.Optional;
+
+
+
 @Service
 public class MobileService {
 
 	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MobileService.class);
 
-	private Map<String,String> mp=new HashMap<>();
-
-	public String  sendOtp(String mobileNumber)
-	{
-		try
-		{
-			if(mp.containsKey(mobileNumber))
-			{
-				return  "Mobile number is present";
-			}
-			String otp=generateOtp();
-			mp.put(mobileNumber, otp);
-			log.info("Sending OTP number " + mobileNumber + ":" +otp);
-			return "Success";
-		} catch(Exception e)  {
-			log.error("Exception is there in reading a mobileNumber : "+e.getMessage());
-			return "Error";
-		}
-
+	@Autowired
+    GdmsApiRepository gdmsRepository;
+	
+	
+	public String checkUserAndPassword(String mobileNumber, String pass) {
+	    try {
+	        Optional<GdmsApiUsers> userOptional = gdmsRepository.findByMobileNumber(mobileNumber);
+	        if (userOptional.isPresent()) {
+	            GdmsApiUsers user = userOptional.get();
+	            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+	            if (passwordEncoder.matches(pass, user.getPassword())) {
+	                return "A";
+	            } else {
+	                return "NP";
+	            }
+	        } else {
+	            return "NA";
+	        }
+	    } catch (Exception e) {
+	        log.error("Exception occurred: " + e.getMessage());
+	        return "NA";
+	    }
 	}
 
-	public boolean verifyOtp(VerifyMobileOtpDto verifyMobileOtpDto) {
+	public Integer otpGenerator(JwtRequest authenticationRequest) {
 		try {
-			String mobileNumber=verifyMobileOtpDto.getMobileNumber();
-			String enteredOtp=verifyMobileOtpDto.getEnteredOtp();
-			String storedOtp = mp.get(mobileNumber);
-			if (storedOtp != null && storedOtp.equals(enteredOtp)) {
-				return true;
+			String status = checkUserAndPassword(authenticationRequest.getMobileNumber(),
+					authenticationRequest.getPassword());
+			if (status.equals("A")) {
+				Integer randNumber = ((int) (Math.random() * (9999 - 1000+1))) + 1000;
+				//System.out.println(randNumber.toString().length());
+				//if (randNumber.toString().length() < 4) {
+				//	randNumber = randNumber + 1000;
+				//}
+				System.out.println(randNumber);
+				int updateStatus = gdmsRepository.updatetOtp(authenticationRequest.getMobileNumber(), randNumber.toString());
+				if (updateStatus != 0) {
+					log.info("Otp generated");
+					return randNumber;
+				} else {
+					return 0;
+				}
+			} else if (status.equalsIgnoreCase("NP")) {
+				return 1;
 			} else {
-				return false;
+				return 0;
 			}
 		} catch (Exception e) {
-			log.error("An error occurred during OTP verification: {}", e.getMessage());
-			return false;
+			log.error("Exception:-" + e.getMessage());
+			return 0;
 		}
+
 	}
 
+	public Integer restOtp(JwtRequest authenticationRequest) {
+		try {
+			int updateStatus = gdmsRepository.updatetOtp(authenticationRequest.getMobileNumber(), "000000");
+			return updateStatus;
+		} catch (Exception e) {
+			log.error("Exception:-" + e.getMessage());
+			return 0;
+		}
 
-
-	private String generateOtp() {
-		Random random = new Random();
-		int otp = 100000 + random.nextInt(900000);
-		return String.valueOf(otp);
 	}
+
+	
 }

@@ -73,7 +73,7 @@ public class EmailService {
 				textMime.setText(message,"UTF-8","html");
 				mimeMultipart.addBodyPart(textMime);
 
-				// Image part
+				/*// Image part
 				String path = "C:\\Users\\GORANK\\Downloads\\logoimg.jpg";
 				Path pathToImage = Paths.get(path);
 				if (Files.exists(pathToImage) && Files.isRegularFile(pathToImage)) {
@@ -83,7 +83,7 @@ public class EmailService {
 					MimeBodyPart imageMime = new MimeBodyPart();
 					imageMime.setContent(base64encodedimage, "text/jpeg");
 					mimeMultipart.addBodyPart(imageMime);
-				}
+				}*/
 
 				// Set the content
 				mimeMessage.setContent(mimeMultipart);

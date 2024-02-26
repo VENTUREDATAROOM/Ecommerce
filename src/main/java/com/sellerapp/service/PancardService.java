@@ -1,24 +1,31 @@
 package com.sellerapp.service;
 
-import java.io.IOException;
-import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.client.RestTemplate;
 
 import com.sellerapp.entity.PancardEntity;
-import com.sellerapp.model.PancardDto;
+import com.sellerapp.model.PancardDTO;
 import com.sellerapp.repository.PancardRepo;
 
 @Service
 public class PancardService {
 	@Autowired
 	private PancardRepo pancardRepo;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PancardService.class);
 
 
-	public String savepancardphoto(MultipartFile pic, PancardDto pan)
+   /*	public String savePancardPhoto(PancardDTO pan)
 	{
 		try
 		{
@@ -28,23 +35,39 @@ public class PancardService {
 				pancardEntity=new PancardEntity();
 				pancardEntity.setPancardNumber(pan.getPancardNumber());
 			}
-			pancardEntity.setPic(Base64.getEncoder().encode(pic.getBytes()));
+			
+			pancardEntity.setPic(pan.getPic());
 			pancardRepo.save(pancardEntity);
 			log.info("Pancard details are get successfully");
 			return "Success";
 		}
-		catch (IOException ioException) {
-			log.error("IO Exception while reading or saving the pancard photo: " + ioException.getMessage(), ioException);
-			return "Error";
-		}
+		
 		catch (Exception e) {
-			log.error("Error occurred while saving pancard details: " + e.getMessage(), e);
+			log.error("Error occurred while saving pancard details: " + e.getMessage());
 			return "Error";
 		}
 
-	}
-	public boolean verifyPancardNumber(PancardDto pan)
+	}*/
+	public String getPanFromMobile(PancardDTO pan)
 	{
-		return pan!=null && pan.getPancardNumber()!=null && pan.getPancardNumber().length()==20;
+		HttpHeaders header=new HttpHeaders();
+		
+
+		HttpEntity<PancardDTO> entity=new HttpEntity<>(pan,header);
+		ResponseEntity<String> response=restTemplate.exchange("https://kyc-api.surepass.io/api/v1/pan/mobile-to-pan", HttpMethod.POST, entity, String.class);
+		if(response.getStatusCode()==HttpStatus.OK)
+		{
+		
+			return response.getBody();
+		}
+		else
+		{
+			return null;
+		}
 	}
+	
+	/*public boolean verifyPancardNumber(PancardDTO pan)
+	{
+		return pan!=null && pan.getPancardNumber()!=null && pan.getPancardNumber().length()==10;
+	}*/
 }
