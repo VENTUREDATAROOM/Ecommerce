@@ -1,6 +1,6 @@
 package com.sellerapp.model;
 
-public class EmailDto {
+public class EmailDTO {
 	private String email;
 
 	public String getEmail() {

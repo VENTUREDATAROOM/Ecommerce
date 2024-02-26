@@ -1,23 +1,22 @@
 package com.sellerapp.model;
 
-public class ResetPasswordDto {
+public class ChangePasswordDTO {
 
-	private String userCode;
-	private String originalPassword;
+	private String mobileNumber;
+	private String oldPassword;
 	private String newPassword;
-	private String confirmPassword;
-
-	public String getUserCode() {
-		return userCode;
+	 
+	public String getMobileNumber() {
+		return mobileNumber;
 	}
-	public void setUserCode(String userCode) {
-		this.userCode = userCode;
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
-	public String getOriginalPassword() {
-		return originalPassword;
+	public String getOldPassword() {
+		return oldPassword;
 	}
-	public void setOriginalPassword(String originalPassword) {
-		this.originalPassword = originalPassword;
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
 	}
 	public String getNewPassword() {
 		return newPassword;
@@ -25,11 +24,6 @@ public class ResetPasswordDto {
 	public void setNewPassword(String newPassword) {
 		this.newPassword = newPassword;
 	}
-	public String getConfirmPassword() {
-		return confirmPassword;
-	}
-	public void setConfirmPassword(String confirmPassword) {
-		this.confirmPassword = confirmPassword;
-	}
+	
 
 }

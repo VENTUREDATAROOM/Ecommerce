@@ -7,9 +7,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Table;
 import javax.persistence.Id;
 
+
 @Entity
 @Table(name="aadhar_details")
 public class AadharEntity {
+	
 	
 	
 	@Id
@@ -20,9 +22,10 @@ public class AadharEntity {
 	private String aadharNumber;
 	
 	@Column(name="frontpage_pic")
-	private byte[] frontPage;
+	private String frontPage;
+	
 	@Column(name="backpage_pic")
-	private byte[] backPage;
+	private String backPage;
 	public Long getId() {
 		return Id;
 	}
@@ -35,18 +38,45 @@ public class AadharEntity {
 	public void setAadharNumber(String aadharNumber) {
 		this.aadharNumber = aadharNumber;
 	}
-	public byte[] getFrontPage() {
+	public String getFrontPage() {
 		return frontPage;
 	}
-	public void setFrontPage(byte[] frontPage) {
+	public void setFrontPage(String frontPage) {
 		this.frontPage = frontPage;
 	}
-	public byte[] getBackPage() {
+	public String getBackPage() {
 		return backPage;
 	}
-	public void setBackPage(byte[] backPage) {
+	public void setBackPage(String backPage) {
 		this.backPage = backPage;
 	}
+	
+	public AadharEntity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public AadharEntity(Long id, String aadharNumber, String frontPage, String backPage) {
+		super();
+		Id = id;
+		this.aadharNumber = aadharNumber;
+		this.frontPage = frontPage;
+		this.backPage = backPage;
+	}
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 
