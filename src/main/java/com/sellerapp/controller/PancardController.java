@@ -6,14 +6,11 @@ import org.springframework.http.ResponseEntity;
 //import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sellerapp.model.PancardDTO;
-import com.sellerapp.model.Response2;
 import com.sellerapp.service.PancardService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -63,15 +60,14 @@ public class PancardController {
 	 * "200"); } else { return Response2.generateResponse("Invalid PAN card number",
 	 * HttpStatus.BAD_REQUEST, "400"); } }
 	 */
-	@PostMapping("/api/v1/pan/mobile-to-pan")
-	public ResponseEntity<?> getPanFromMobile(@RequestBody PancardDTO pan) {
-		String res = pancardService.getPanFromMobile(pan);
-		if (res != null) {
-			return Response2.generateResponse(res, HttpStatus.OK, "200");
-		} else {
-			return Response2.generateResponse("Error", HttpStatus.INTERNAL_SERVER_ERROR, "500");
-		}
-	}
+	/*
+	 * @PostMapping("/api/v1/pan/mobile-to-pan") public ResponseEntity<?>
+	 * getPanFromMobile(@RequestBody PancardDTO pan) { String res =
+	 * pancardService.getPanFromMobile(pan); if (res != null) { return
+	 * Response2.generateResponse(res, HttpStatus.OK, "200"); } else { return
+	 * Response2.generateResponse("Error", HttpStatus.INTERNAL_SERVER_ERROR, "500");
+	 * } }
+	 */
 
 	@PostMapping(value = "/uploadPanCard")
 	public ResponseEntity<?> getPanCardNumber(@RequestParam("panCardNumber") String panCardNumber,

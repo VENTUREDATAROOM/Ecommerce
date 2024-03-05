@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.sellerapp.entity.OtpEntity;
 
-public interface UserRepository extends	JpaRepository<OtpEntity,Long> {
+public interface UserRepository extends JpaRepository<OtpEntity, Long> {
 
-	
-	
-     Optional<OtpEntity> findByUserCodeAndOtp(String userCode, String otp);
+	Optional<OtpEntity> findByUsernameAndOtp(String username, String otp);
+
+	boolean existsByEmail(String email);
 }

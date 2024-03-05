@@ -1,13 +1,10 @@
 package com.sellerapp.controller;
 
 import java.util.HashMap;
-
-import com.sellerapp.service.JwtUserDetailsService;
-import com.sellerapp.service.MobileService;
+//import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -15,6 +12,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,24 +23,25 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sellerapp.config.JwtTokenUtil;
-
 import com.sellerapp.model.JwtRequest;
+import com.sellerapp.model.LoginDTO;
+import com.sellerapp.model.LoginResponse;
 import com.sellerapp.model.Response2;
 import com.sellerapp.model.ResponseForToken;
 import com.sellerapp.model.ResponseWithObject;
-import com.sellerapp.model.VerifyMobileOtpDTO;
+import com.sellerapp.service.JwtUserDetailsService;
 import com.sellerapp.service.MobileService;
 
 import io.jsonwebtoken.impl.DefaultClaims;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 
 @RestController
 @CrossOrigin("*")
@@ -57,7 +56,7 @@ public class JwtAuthenticationController {
 	private JwtTokenUtil jwtTokenUtil;
 	@Autowired
 	private MobileService mobileService;
-	
+
 	@Autowired
 	private JwtUserDetailsService jwtUserDetailsService;
 
@@ -66,8 +65,6 @@ public class JwtAuthenticationController {
 
 	private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JwtAuthenticationController.class);
 
-
-	
 	@PostMapping(value = "/authenticatebyjson")
 	@Operation(summary = "login apip for the user  for the login ")
 	public ResponseEntity<?> createAuthenticationTokenWithPath(@RequestBody JwtRequest authenticationRequest)
@@ -86,18 +83,46 @@ public class JwtAuthenticationController {
 			return ResponseForToken.generateResponse(" ", HttpStatus.INTERNAL_SERVER_ERROR, "500");
 		}
 	}
-        @PostMapping(value = "/authByJsonOtp")
+
+	/*
+	 * @PostMapping(value = "/authByJsonOtp")
+	 *
+	 * @Operation(summary =
+	 * "Username,password and OTP in JSON format  is required ") public
+	 * ResponseEntity<?> authenticatebyjsonnew(@RequestBody JwtRequest
+	 * authenticationRequest) throws Exception { try {
+	 * authenticate(authenticationRequest.getMobileNumber(),
+	 * authenticationRequest.getPassword()); System.out.println("for login usrname:"
+	 * + authenticationRequest.getMobileNumber() + "$$REQUESTBODYJSON$$" +
+	 * authenticationRequest.getPassword() + "otp:-" +
+	 * authenticationRequest.getOtpgen()); final UserDetails userDetails =
+	 * jwtUserDetailsService.loadUserByOtp(authenticationRequest.getMobileNumber(),
+	 * authenticationRequest.getOtpgen()); final String token =
+	 * jwtTokenUtil.generateToken(userDetails);
+	 * jwtUserDetailsService.setloginHistory(authenticationRequest, token);
+	 * mobileService.restOtp(authenticationRequest); if (token != null) { return
+	 * ResponseForToken.generateResponse(token, HttpStatus.OK, "200"); } else {
+	 * return ResponseForToken.generateResponse("",
+	 * HttpStatus.INTERNAL_SERVER_ERROR, "500"); } } catch (Exception e) { return
+	 * Response2.generateResponse("INVALID_CREDENTIALS ", HttpStatus.UNAUTHORIZED,
+	 * "000"); } }
+	 */
+
+	@PostMapping(value = "/verifyOtp")
 	@Operation(summary = "Username,password and OTP in JSON format  is required ")
 	public ResponseEntity<?> authenticatebyjsonnew(@RequestBody JwtRequest authenticationRequest) throws Exception {
 		try {
 			authenticate(authenticationRequest.getMobileNumber(), authenticationRequest.getPassword());
 			System.out.println("for login usrname:" + authenticationRequest.getMobileNumber() + "$$REQUESTBODYJSON$$"
 					+ authenticationRequest.getPassword() + "otp:-" + authenticationRequest.getOtpgen());
+
 			final UserDetails userDetails = jwtUserDetailsService.loadUserByOtp(authenticationRequest.getMobileNumber(),
 					authenticationRequest.getOtpgen());
+
 			final String token = jwtTokenUtil.generateToken(userDetails);
 			jwtUserDetailsService.setloginHistory(authenticationRequest, token);
 			mobileService.restOtp(authenticationRequest);
+
 			if (token != null) {
 				return ResponseForToken.generateResponse(token, HttpStatus.OK, "200");
 			} else {
@@ -107,105 +132,33 @@ public class JwtAuthenticationController {
 			return Response2.generateResponse("INVALID_CREDENTIALS ", HttpStatus.UNAUTHORIZED, "000");
 		}
 	}
-   	@PostMapping(value = "/otpGenrator")
+
+	@PostMapping(value = "/loginByOtp", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, "image/jpeg",
+			"image/png" }, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Genration of the OTP for login and registration")
-	public ResponseEntity<?> otpGenerator(@Valid @RequestBody JwtRequest authenticationRequest) throws Exception {
+	public ResponseEntity<?> otpGenerator(@ModelAttribute JwtRequest authenticationRequest) throws Exception {
 		try {
 			Integer otp = mobileService.otpGenerator(authenticationRequest);
 			if (otp > 1) {
 				authenticationRequest.setOtpgen(otp.toString());
-				authenticationRequest.setMobileNumber(jwtUserDetailsService.getMobileNo(authenticationRequest));
-				System.out.println(authenticationRequest.getMobileNumber());
-				
-				return new ResponseWithObject().generateResponse("success", HttpStatus.OK, "", authenticationRequest);
+				authenticationRequest.setMobileNumber(authenticationRequest.getMobileNumber());
+
+				return new ResponseWithObject().generateResponse("success", HttpStatus.OK, "200",
+						authenticationRequest);
 			} else if (otp == 1) {
 				authenticationRequest.setOtpgen(null);
 				return new ResponseWithObject().generateResponse("WRONG PASSWORD", HttpStatus.UNAUTHORIZED, "1002",
 						authenticationRequest);
 			} else {
 				authenticationRequest.setOtpgen(null);
-				return new ResponseWithObject().generateResponse("UNAUTHORIZED", HttpStatus.UNAUTHORIZED, "1003",
-						authenticationRequest);
+				return new ResponseWithObject().generateResponse("UNAUTHORIZED", HttpStatus.UNAUTHORIZED, "1003", null);
 			}
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			return ResponseForToken.generateResponse("parameter does not matched", HttpStatus.BAD_REQUEST, "400");
 		}
 	}
-	 /*@PostMapping(value = "/authByJsonOtp")
-	    @Operation(summary = "Username, password, and OTP in JSON format are required")
-	    public ResponseEntity<?> authenticatebyjsonnew(@RequestBody JwtRequest authenticationRequest) throws Exception {
-	        try {
-	            
-	            authenticate(authenticationRequest.getMobileNumber(), authenticationRequest.getPassword());
-
-	           
-	            Integer otp = mobileService.generateOTPAndSend(authenticationRequest.getMobileNumber());
-	            
-	            // Assuming OTP is sent successfully
-	            if (otp != null && otp > 0) {
-	                return Response2.generateResponse("OTP send successfully", HttpStatus.OK, "200");
-	            } else {
-	                return Response2.generateResponse("Failed to send OTP", HttpStatus.INTERNAL_SERVER_ERROR, "500");
-	            }
-	        } catch (Exception e) {
-	        	e.printStackTrace();
-	            return Response2.generateResponse("Error", HttpStatus.BAD_REQUEST, "400");	       
-	            }
-	    }*/
-     
-	 /*@PostMapping(value="/verifyOtp")
-	 @Operation(summary="in this api we have to verify otp and it will generate a token")
-	  public ResponseEntity<?> verifyOtp(@RequestBody VerifyMobileOtpDTO verifyMobileOtpDTO)
-	  {
-		 try
-		 {
-			 String mobileNumber=verifyMobileOtpDTO.getMobileNumber();
-			 String otp=verifyMobileOtpDTO.getOtp();
-			 //System.out.println(" for verify mobile number through otp :" +verifyMobileOtpDTO.getMobileNumber()"+" verifyMobileOtpDTO.getOtp());
-			 boolean isOtpValid=mobileService.validateOTP(mobileNumber,otp);
-			 if(!isOtpValid)
-			 {
-				 return Response2.generateResponse(" ", HttpStatus.UNAUTHORIZED, "400");
-			 }
-			 UserDetails userDetails=userDetailsService.loadUserByUsername(mobileNumber);
-			 final String token=jwtTokenUtil.generateToken(userDetails);
-			 if (token != null) {
-					return ResponseForToken.generateResponse(token, HttpStatus.OK, "200");
-				} else {
-					return ResponseForToken.generateResponse(" ", HttpStatus.INTERNAL_SERVER_ERROR, "500");
-				}
-		 } catch(Exception e)
-		 {
-			 e.printStackTrace();
-			 return Response2.generateResponse(" ", HttpStatus.INTERNAL_SERVER_ERROR, "500");
-			 
-		 }
-	  }*/
-	/* @PostMapping(value = "/verifyOtp")
-	 @Operation(summary = "Verify OTP and generate a token")
-	 public ResponseEntity<?> verifyOtp(@RequestBody VerifyMobileOtpDTO verifyMobileOtpDTO) {
-	     try {
-	         String mobileNumber = verifyMobileOtpDTO.getMobileNumber();
-	         String otp = verifyMobileOtpDTO.getOtp();
-
-	         boolean isOtpValid = mobileService.validateOTP(mobileNumber, otp);
-	         if (!isOtpValid) {
-	             return Response2.generateResponse("INVALID_OTP", HttpStatus.UNAUTHORIZED, "400");
-	         }
-
-	         UserDetails userDetails = userDetailsService.loadUserByUsername(mobileNumber);
-	         String token = jwtTokenUtil.generateToken(userDetails);
-
-	         if (token != null) {
-	             return ResponseForToken.generateResponse(token, HttpStatus.OK, "200");
-	         } else {
-	             return ResponseForToken.generateResponse("TOKEN_GENERATION_FAILED", HttpStatus.INTERNAL_SERVER_ERROR, "500");
-	         }
-	     } catch (Exception e) {
-	         e.printStackTrace();
-	         return Response2.generateResponse("INTERNAL_SERVER_ERROR", HttpStatus.INTERNAL_SERVER_ERROR, "500");
-	     }
-	 }*/
 
 	@PostMapping(value = "/resetOtp")
 	@Operation(summary = "Reset of the OTP for login and registration")
@@ -225,8 +178,6 @@ public class JwtAuthenticationController {
 		}
 	}
 
-	 
-
 	@GetMapping(value = "/refreshtoken")
 	public ResponseEntity<?> refreshtoken(HttpServletRequest request) throws Exception {
 		// From the HttpRequest get the claims
@@ -240,7 +191,6 @@ public class JwtAuthenticationController {
 		}
 	}
 
- 
 	private void authenticate(String mobileNumber, String password) {
 		Objects.requireNonNull(mobileNumber);
 		Objects.requireNonNull(password);
@@ -254,7 +204,6 @@ public class JwtAuthenticationController {
 		}
 	}
 
-     
 	public Map<String, Object> getMapFromIoJsonwebtokenClaims(DefaultClaims claims) {
 		Map<String, Object> expectedMap = new HashMap<>();
 		for (Entry<String, Object> entry : claims.entrySet()) {
@@ -262,14 +211,14 @@ public class JwtAuthenticationController {
 		}
 		return expectedMap;
 	}
-	
 
-	/*public String generateOtp() {
-		Random random = new Random();
-		int otp = 1000 + random.nextInt(9000);
-		return String.valueOf(otp);
-	}*/
-	
+	@PostMapping("/login")
+	public ResponseEntity<?> loginByUser(@RequestBody LoginDTO loginData) {
+
+		//
+		LoginResponse l = this.mobileService.loginInService(loginData);
+		return new ResponseWithObject().generateResponse("success", HttpStatus.OK, "200", l);
+
+	}
+
 }
-
-
