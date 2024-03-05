@@ -4,8 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Table;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "api_user")
@@ -16,19 +16,32 @@ public class GdmsApiUsers {
 	@Column(name = "user_id")
 	private Long id;
 	@Id
-	@Column(name = "mobile_number")
+	@Column(name = "mobile_number", unique = true)
 	private String mobileNumber;
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "email")
+	@Column(name = "email", unique = true)
 	private String email;
 	@Column(name = "password")
 	private String password;
 	@Column(name = "user_code")
 	private String userCode;
-	@Column(name="otp")
+	@Column(name = "otp")
 	private String otp;
+	@Column(name = "profile_image")
+	private byte[] profileImage;
+
+	@Column(name = "image_content_type")
+	private String contentType;
+
+	public byte[] getProfileImage() {
+		return profileImage;
+	}
+
+	public void setProfileImage(byte[] profileImage) {
+		this.profileImage = profileImage;
+	}
 
 	public String getUserCode() {
 		return userCode;
@@ -86,7 +99,12 @@ public class GdmsApiUsers {
 		this.otp = otp;
 	}
 
-	
-	
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
 
 }

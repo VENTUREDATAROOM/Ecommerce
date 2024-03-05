@@ -31,8 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sellerapp.config.JwtTokenUtil;
 import com.sellerapp.model.JwtRequest;
-import com.sellerapp.model.LoginDTO;
-import com.sellerapp.model.LoginResponse;
 import com.sellerapp.model.Response2;
 import com.sellerapp.model.ResponseForToken;
 import com.sellerapp.model.ResponseWithObject;
@@ -83,30 +81,6 @@ public class JwtAuthenticationController {
 			return ResponseForToken.generateResponse(" ", HttpStatus.INTERNAL_SERVER_ERROR, "500");
 		}
 	}
-
-	/*
-	 * @PostMapping(value = "/authByJsonOtp")
-	 *
-	 * @Operation(summary =
-	 * "Username,password and OTP in JSON format  is required ") public
-	 * ResponseEntity<?> authenticatebyjsonnew(@RequestBody JwtRequest
-	 * authenticationRequest) throws Exception { try {
-	 * authenticate(authenticationRequest.getMobileNumber(),
-	 * authenticationRequest.getPassword()); System.out.println("for login usrname:"
-	 * + authenticationRequest.getMobileNumber() + "$$REQUESTBODYJSON$$" +
-	 * authenticationRequest.getPassword() + "otp:-" +
-	 * authenticationRequest.getOtpgen()); final UserDetails userDetails =
-	 * jwtUserDetailsService.loadUserByOtp(authenticationRequest.getMobileNumber(),
-	 * authenticationRequest.getOtpgen()); final String token =
-	 * jwtTokenUtil.generateToken(userDetails);
-	 * jwtUserDetailsService.setloginHistory(authenticationRequest, token);
-	 * mobileService.restOtp(authenticationRequest); if (token != null) { return
-	 * ResponseForToken.generateResponse(token, HttpStatus.OK, "200"); } else {
-	 * return ResponseForToken.generateResponse("",
-	 * HttpStatus.INTERNAL_SERVER_ERROR, "500"); } } catch (Exception e) { return
-	 * Response2.generateResponse("INVALID_CREDENTIALS ", HttpStatus.UNAUTHORIZED,
-	 * "000"); } }
-	 */
 
 	@PostMapping(value = "/verifyOtp")
 	@Operation(summary = "Username,password and OTP in JSON format  is required ")
@@ -210,15 +184,6 @@ public class JwtAuthenticationController {
 			expectedMap.put(entry.getKey(), entry.getValue());
 		}
 		return expectedMap;
-	}
-
-	@PostMapping("/login")
-	public ResponseEntity<?> loginByUser(@RequestBody LoginDTO loginData) {
-
-		//
-		LoginResponse l = this.mobileService.loginInService(loginData);
-		return new ResponseWithObject().generateResponse("success", HttpStatus.OK, "200", l);
-
 	}
 
 }
