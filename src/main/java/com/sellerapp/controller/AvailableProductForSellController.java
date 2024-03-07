@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,9 +27,10 @@ public class AvailableProductForSellController {
 	@Autowired
 	private AvailableProductForSellService AvailableProductForSellservice;
 
-	@PostMapping("/add/productForSell")
+	@PostMapping("/add/productForSell/{UserCode}")
 	public ResponseEntity<?> addAvailableProductForSell(@RequestParam("ListImage") List<MultipartFile> ImageData,
-			@RequestParam("data") String FormData, @RequestParam("ProductMasterSubCode") String ProductMasterSubCode) {
+			@RequestParam("data") String FormData, @RequestParam("ProductMasterSubCode") String ProductMasterSubCode,
+			@PathVariable("UserCode") String UserCode) {
 
 		ObjectMapper Object = new ObjectMapper();
 		AvailableProductResponse ResponseToUser = new AvailableProductResponse();
@@ -42,7 +44,7 @@ public class AvailableProductForSellController {
 		try {
 
 			AvailableProductResponse ResponseData = this.AvailableProductForSellservice
-					.addAvailableProductFoSell(ProductData, ImageData, ProductMasterSubCode);
+					.addAvailableProductFoSell(ProductData, ImageData, ProductMasterSubCode, UserCode);
 			if (ResponseData == null) {
 				throw new NullPointerException("error_NoData");
 			}

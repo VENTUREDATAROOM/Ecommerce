@@ -38,7 +38,7 @@ public class AvailableProductForSellService {
 	private ProductForSellPhotoRepository ProductForSellPhotoRepo;
 
 	public AvailableProductResponse addAvailableProductFoSell(AvailableProductRequest ProductData,
-			List<MultipartFile> ImageFileData, String ProductMasterSubcode) {
+			List<MultipartFile> ImageFileData, String ProductMasterSubcode, String UserCode) {
 
 		AvailableProductForSell FormDataEntity = new AvailableProductForSell();
 		AvailableProductImage ImageDataEntity = new AvailableProductImage();
@@ -74,7 +74,7 @@ public class AvailableProductForSellService {
 
 			LocalDateTime date = LocalDateTime.now();
 			FormDataEntity.setTransactionId(date);
-
+			FormDataEntity.setUserCode(UserCode);
 			AvailableProductForSell ResponseData = this.AvailableProductRepo.save(FormDataEntity);
 
 			if (ResponseData == null) {
