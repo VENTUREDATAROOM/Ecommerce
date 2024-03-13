@@ -20,14 +20,19 @@ import com.sellerapp.model.AvailableProductRequest;
 import com.sellerapp.model.AvailableProductResponse;
 import com.sellerapp.service.AvailableProductForSellService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/available")
+@Tag(name = "Order Api")
 public class AvailableProductForSellController {
 
 	@Autowired
 	private AvailableProductForSellService AvailableProductForSellservice;
 
 	@PostMapping("/add/productForSell/{UserCode}")
+	@Operation(summary = "API for Placed Order")
 	public ResponseEntity<?> addAvailableProductForSell(@RequestParam("ListImage") List<MultipartFile> ImageData,
 			@RequestParam("data") String FormData, @RequestParam("ProductMasterSubCode") String ProductMasterSubCode,
 			@PathVariable("UserCode") String UserCode) {
@@ -59,6 +64,7 @@ public class AvailableProductForSellController {
 	}
 
 	@GetMapping("/get/allproductForSell")
+	@Operation(summary = "API for get All List of Placed  Order")
 	public ResponseEntity<?> getAllproductData() {
 		try {
 			List<AllAvailableProductResponse> ProductData = this.AvailableProductForSellservice
@@ -74,12 +80,25 @@ public class AvailableProductForSellController {
 		}
 	}
 
-	@PostMapping("/get/allEspecificProductForSell")
-	public ResponseEntity<?> getAllProductforSellRelatedOne(@RequestParam("ProductMaterCode") String ProductMaterCode) {
+//	@PostMapping("/get/allEspecificProductForSell")
+//	public ResponseEntity<?> getAllProductforSellRelatedOne(@RequestParam("ProductMaterCode") String ProductMaterCode) {
+//		try {
+//			List<AvailableProductForSellResponse> ResponseData = this.AvailableProductForSellservice
+//					.getallAvailableProductData(ProductMaterCode);
+//			return new ResponseEntity<List<AvailableProductForSellResponse>>(ResponseData, HttpStatus.OK);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return new ResponseEntity<String>("Bad GetWay", HttpStatus.BAD_GATEWAY);
+//		}
+//	}
+
+	@PostMapping("/get/SingleEspecificProductForSell")
+	@Operation(summary = "API for get one single placed Order Data")
+	public ResponseEntity<?> getSingleProductforSellRelatedOne(@RequestParam("OrderCode") String OrderCode) {
 		try {
-			List<AvailableProductForSellResponse> ResponseData = this.AvailableProductForSellservice
-					.getallAvailableProductData(ProductMaterCode);
-			return new ResponseEntity<List<AvailableProductForSellResponse>>(ResponseData, HttpStatus.OK);
+			AvailableProductForSellResponse ResponseData = this.AvailableProductForSellservice
+					.getSingleAvailableProductData(OrderCode);
+			return new ResponseEntity<AvailableProductForSellResponse>(ResponseData, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<String>("Bad GetWay", HttpStatus.BAD_GATEWAY);

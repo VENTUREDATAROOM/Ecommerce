@@ -53,27 +53,30 @@ public class AvailableProductForSellService {
 			FormDataEntity.setProductMasterSubCode(ProductForSellData.getProductMasterSubCode());
 			FormDataEntity.setQuality(ProductData.getQuality());
 			FormDataEntity.setMandiName(ProductData.getMandiName());
-			FormDataEntity.setExpectedPrice("100");
+			FormDataEntity.setExpectedPrice(ProductData.getPrice());
 			FormDataEntity.setQuantity(ProductData.getQuantity());
 
-			int ExpectedPrice = Integer.parseInt("100");
-			int totalPrice = ExpectedPrice * Integer.parseInt(ProductData.getQuantity());
+			// int ExpectedPrice = Integer.parseInt("100");
+			int totalPrice = Integer.parseInt(ProductData.getPrice()) * Integer.parseInt(ProductData.getQuantity());
 			FormDataEntity.setTotalPrice(Integer.toString(totalPrice));
 			FormDataEntity.setLocation("15.776395,17.830100");
 
+			FormDataEntity.setAddress(ProductData.getAddress());
+
 			int OderOtp = (int) (Math.random() * 10000);
-			FormDataEntity.setOrderOtp(Integer.toString(totalPrice));
+			FormDataEntity.setOrderOtp(Integer.toString(OderOtp));
 
 			String OrderCode = codeGenerator();
 
 			FormDataEntity.setOrderCode(OrderCode);
-			FormDataEntity.setHarvestData(ProductData.getHarvestData());
-			LocalDateTime TransactionDate = LocalDateTime.now();
-			FormDataEntity.setTransactionId(TransactionDate);
+			FormDataEntity.setHarvestDate(ProductData.getHarvestDate());
+			LocalDateTime Transactiondate = LocalDateTime.now();
+			String newStr = Transactiondate.toString();
+			String transactionId = newStr.substring(0, 4) + newStr.substring(5, 7) + newStr.substring(8, 13)
+					+ newStr.substring(14, 16) + newStr.substring(17, 19) + newStr.substring(20);
+			FormDataEntity.setTransactionId(transactionId);
 			FormDataEntity.setDistanceFromMandi(ProductData.getDistanceFromMandi());
 
-			LocalDateTime date = LocalDateTime.now();
-			FormDataEntity.setTransactionId(date);
 			FormDataEntity.setUserCode(UserCode);
 			AvailableProductForSell ResponseData = this.AvailableProductRepo.save(FormDataEntity);
 
@@ -126,31 +129,32 @@ public class AvailableProductForSellService {
 			List<AllAvailableProductResponse> ResponseListData = new ArrayList<>();
 
 			for (AvailableProductForSell item : ProductData) {
-				if (!forFilterData.contains(item.getProductMasterCode())) {
-					forFilterData.add(item.getProductMasterCode());
+				// if (!forFilterData.contains(item.getProductMasterCode())) {
+				// forFilterData.add(item.getProductMasterCode());
 
-					AllAvailableProductResponse ResponseData = new AllAvailableProductResponse();
-					ResponseData.setId(item.getId());
-					ResponseData.setProductName(item.getProductName());
-					ResponseData.setProductSubName(item.getProductSubName());
-					ResponseData.setUserCode(item.getUserCode());
-					ResponseData.setProductMasterCode(item.getProductMasterCode());
-					ResponseData.setProductMasterSubCode(item.getProductMasterSubCode());
-					ResponseData.setMandiName(item.getMandiName());
-					ResponseData.setQuantity(item.getQuantity());
-					ResponseData.setQuality(item.getQuality());
-					ResponseData.setExpectedPrice(item.getExpectedPrice());
-					ResponseData.setTotalPrice(item.getTotalPrice());
-					ResponseData.setLocation(item.getLocation());
-					ResponseData.setDistanceFromMandi(item.getDistanceFromMandi());
-					ResponseData.setOrderCode(item.getOrderCode());
-					ResponseData.setOrderOtp(item.getOrderOtp());
-					ResponseData.setHarvestData(item.getHarvestData());
-					ResponseData.setTransactionId(item.getTransactionId());
-					ResponseData.setImgeOfProduct(productImageToString(item.getProductMasterSubCode()));
+				AllAvailableProductResponse ResponseData = new AllAvailableProductResponse();
+				ResponseData.setId(item.getId());
+				ResponseData.setProductName(item.getProductName());
+				ResponseData.setProductSubName(item.getProductSubName());
+				ResponseData.setUserCode(item.getUserCode());
+				ResponseData.setProductMasterCode(item.getProductMasterCode());
+				ResponseData.setProductMasterSubCode(item.getProductMasterSubCode());
+				ResponseData.setMandiName(item.getMandiName());
+				ResponseData.setQuantity(item.getQuantity());
+				ResponseData.setQuality(item.getQuality());
+				ResponseData.setExpectedPrice(item.getExpectedPrice());
+				ResponseData.setTotalPrice(item.getTotalPrice());
+				ResponseData.setLocation(item.getLocation());
+				ResponseData.setDistanceFromMandi(item.getDistanceFromMandi());
+				ResponseData.setOrderCode(item.getOrderCode());
+				ResponseData.setOrderOtp(item.getOrderOtp());
+				ResponseData.setAddress(item.getAddress());
+				ResponseData.setHarvestDate(item.getHarvestDate());
+				ResponseData.setTransactionId(item.getTransactionId());
+				ResponseData.setImgeOfProduct(productImageToString(item.getProductMasterSubCode()));
 
-					ResponseListData.add(ResponseData);
-				}
+				ResponseListData.add(ResponseData);
+				// }
 			}
 			return ResponseListData;
 		} catch (Exception e) {
@@ -189,7 +193,8 @@ public class AvailableProductForSellService {
 				ResponseData.setDistanceFromMandi(item.getDistanceFromMandi());
 				ResponseData.setOrderCode(item.getOrderCode());
 				ResponseData.setOrderOtp(item.getOrderOtp());
-				ResponseData.setHarvestData(item.getHarvestData());
+				ResponseData.setAddress(item.getAddress());
+				ResponseData.setHarvestDate(item.getHarvestDate());
 				ResponseData.setTransactionId(item.getTransactionId());
 				ResponseData.setQuantity(item.getQuantity());
 				List<String> ImageData = GetImageBase64(item.getOrderCode());
@@ -198,6 +203,45 @@ public class AvailableProductForSellService {
 				ResponseListData.add(ResponseData);
 			}
 			return ResponseListData;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	public AvailableProductForSellResponse getSingleAvailableProductData(String OrderCode) {
+
+		AvailableProductForSell item = this.AvailableProductRepo.findByOrderCode(OrderCode);
+		List<AvailableProductForSellResponse> ResponseListData = new ArrayList<>();
+
+		try {
+
+			// for (AvailableProductForSell item : ProductData) {
+			AvailableProductForSellResponse ResponseData = new AvailableProductForSellResponse();
+			ResponseData.setProductName(item.getProductName());
+			ResponseData.setProductSubName(item.getProductSubName());
+			ResponseData.setUserCode(item.getUserCode());
+			ResponseData.setProductMasterCode(item.getProductMasterCode());
+			ResponseData.setProductMasterSubCode(item.getProductMasterSubCode());
+			ResponseData.setMandiName(item.getMandiName());
+			ResponseData.setQuality(item.getQuality());
+			ResponseData.setExpectedPrice(item.getExpectedPrice());
+			ResponseData.setTotalPrice(item.getTotalPrice());
+			ResponseData.setLocation(item.getLocation());
+			ResponseData.setDistanceFromMandi(item.getDistanceFromMandi());
+			ResponseData.setAddress(item.getAddress());
+			ResponseData.setOrderCode(item.getOrderCode());
+			ResponseData.setOrderOtp(item.getOrderOtp());
+			ResponseData.setHarvestDate(item.getHarvestDate());
+			ResponseData.setTransactionId(item.getTransactionId());
+			ResponseData.setQuantity(item.getQuantity());
+			List<String> ImageData = GetImageBase64(item.getOrderCode());
+			ResponseData.setImageData(ImageData);
+
+			// ResponseListData.add(ResponseData);
+			// }
+			return ResponseData;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

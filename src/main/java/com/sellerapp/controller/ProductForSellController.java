@@ -16,14 +16,19 @@ import com.sellerapp.entity.ProductForSell;
 import com.sellerapp.model.ProductForSellResponse;
 import com.sellerapp.service.ProductForSellService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/product")
+@Tag(name = "Product APIs")
 public class ProductForSellController {
 
 	@Autowired
 	private ProductForSellService ProductForSellService;
 
 	@PostMapping("/add/productForSell")
+	@Operation(summary = "API for add Product")
 	public String addDataOfProductForSell(@RequestParam("ProductName") String ProductName,
 			@RequestParam("ProductSubName") String ProductSubName,
 			@RequestParam("ProductImage") MultipartFile ImageFile) {
@@ -43,6 +48,7 @@ public class ProductForSellController {
 	}
 
 	@GetMapping("/get/allProductData")
+	@Operation(summary = "API for get List Of All Product")
 	public ResponseEntity<?> getAllProductForSellData() {
 		try {
 
@@ -59,6 +65,7 @@ public class ProductForSellController {
 	}
 
 	@PostMapping("/get/singleDataOfProduct")
+	@Operation(summary = "API for get one single data(required ProductFinalCode in form data)")
 	public ResponseEntity<?> getSingleDataOfProduct(@RequestParam("ProductFinalCode") String ProductFinalCode) {
 		try {
 			ProductForSellResponse ResponseData = this.ProductForSellService.getSingleData(ProductFinalCode);
@@ -74,6 +81,7 @@ public class ProductForSellController {
 	}
 
 	@PostMapping("/get/allSubProduct")
+	@Operation(summary = "API for get all sub product like new and old potato")
 	public ResponseEntity<?> GetProductSubName(@RequestParam("ProductMasterCode") String ProductMasterCode) {
 		try {
 			List<ProductForSell> ResponseData = this.ProductForSellService.getListOfProduct(ProductMasterCode);
