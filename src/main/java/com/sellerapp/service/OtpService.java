@@ -2,16 +2,16 @@ package com.sellerapp.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.Random;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sellerapp.entity.GdmsApiUsers;
 import com.sellerapp.entity.OtpEntity;
 import com.sellerapp.model.OtpSignDTO;
-import com.sellerapp.model.VerifyOtpDTO;
+import com.sellerapp.repository.GdmsApiRepository;
 import com.sellerapp.repository.UserRepository;
 
 @Service
@@ -23,91 +23,58 @@ public class OtpService {
 	UserRepository userRepository;
 	@Autowired
 	private EmailService emailService;
+
+	@Autowired
+	private GdmsApiRepository gdmsRepository;
 	@Autowired
 	ModelMapper mapper;
 
-	public String otpByEmail(OtpSignDTO otpsignDTO) {
+	
+	public String otpByUserCode(OtpSignDTO otpSignDTO) {
 		try {
-			// String userCode = otpsignDto.getUserCode();
-			// String email = otpsignDto.getEmail();
-			// String username = otpsignDto.getUsername();
+			String userCode = otpSignDTO.getUserCode();
+			if (userCode == null) {
+				return "Usercode is required";
+			} else {
+				GdmsApiUsers t = this.gdmsRepository.findByUserCode(userCode);
+				if (t != null) {
+					// GdmsApiUsers t = userOptional.get();
+					String otp = generateRandomOtp();
 
-			String otp = generateRandomOtp();
-
-			OtpEntity oe = new OtpEntity();
-
-			// oe.setUsername(otpsignDTO.getUsername());
-			oe.setEmail(otpsignDTO.getEmail());
-
-			oe.setOtp(otp);
-			LocalDateTime currentDateTime = LocalDateTime.now();
-			LocalDateTime otpSendStringFormatted = currentDateTime.plusMinutes(1);
-
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-			String otpSendString = otpSendStringFormatted.format(formatter);
-
-			oe.setOtpSend(otpSendString);
-			LocalDateTime currentdateTime = LocalDateTime.now();
-			LocalDateTime otpExpiryStringFormatted = currentdateTime.plusMinutes(1);
-
-			DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-			String otpExpiryString = otpExpiryStringFormatted.format(formater);
-
-			oe.setOtpExpiry(otpExpiryString);
-			oe = userRepository.save(oe);
-
-			sendOtpByEmail(otpsignDTO.getEmail(), otp);
-
-			// sendVerificationEmail(email);
-
-			log.info("Otp sign in " + otpsignDTO.getEmail());
-			return "Success";
-		} catch (Exception e) {
-			log.error("Error in otpsign: " + e.getMessage());
-			return "Error";
-		}
-	}
-
-	public String verifyOtp(VerifyOtpDTO request)
-
-	{
-		try {
-			Optional<OtpEntity> otpOptional = userRepository.findByUsernameAndOtp(request.getUsername(),
-					request.getOtp());
-			if (otpOptional.isPresent()) {
-				OtpEntity oe = otpOptional.get();
-				if (request.getOtp().equals(oe.getOtp()) && oe.getOtpExpiry() != null) {
-					oe.setOtp(request.getOtp());
-					String otpexpiry = oe.getOtpExpiry();
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-					LocalDateTime otpExpiry = LocalDateTime.parse(otpexpiry, formatter);
+					OtpEntity oe = new OtpEntity();
+					oe.setUserCode(userCode);
+					oe.setEmail(t.getEmail());
+					oe.setOtp(otp);
 
 					LocalDateTime currentDateTime = LocalDateTime.now();
-					if (otpExpiry.isAfter(currentDateTime)) {
+					LocalDateTime otpSendStringFormatted = currentDateTime.plusMinutes(1);
 
-						System.out.println("otpExpiry get expire after the current time");
-						return "Success";
-					} else if (otpExpiry.isBefore(currentDateTime)) {
-						System.out.println("otpexpiry get expire before the current time");
-						return "Invalid OTP";
-					} else {
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+					String otpSendString = otpSendStringFormatted.format(formatter);
+					oe.setOtpSend(otpSendString);
 
-						System.out.println("otpExpiry is not equal to current DateTime");
+					LocalDateTime currentdateTime = LocalDateTime.now();
+					LocalDateTime otpExpiryStringFormatted = currentdateTime.plusMinutes(1);
 
-					}
-					oe.setOtpExpiry(otpexpiry);
-					userRepository.saveAndFlush(oe);
-					System.out.println("Verify otp" + request.getUsername() + "," + request.getOtp());
-					log.info("Verify otp : " + request.getUsername() + ", " + request.getOtp());
-					return "Success";
+					DateTimeFormatter formater = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+					String otpExpiryString = otpExpiryStringFormatted.format(formater);
+					oe.setOtpExpiry(otpExpiryString);
+
+					oe = userRepository.save(oe);
+
+					sendOtpByEmail(t.getEmail(), otp);
+
+					log.info("Otp sign in: {}{}", otpSignDTO.getUserCode());
+
+					return otp;
 				} else {
-					return "It is wrong";
+					log.error("User is not found with userCode:{}", otpSignDTO.getUserCode());
+					return null;
 				}
-			} else {
-				return "User is not found";
 			}
 		} catch (Exception e) {
-			log.error("Error in sign in for otp" + e.getMessage());
+			e.printStackTrace();
+			log.error("Error in otpByUserCode: {}", e.getMessage());
 			return "Error";
 		}
 	}
@@ -130,29 +97,9 @@ public class OtpService {
 		emailService.sendEmail(subject, message, email);
 	}
 
-	public boolean checkEmailExists(String email) {
-		return userRepository.existsByEmail(email);
-	}
-
 	/*
-	 * private boolean sendVerificationEmail(EmailDto emailDto) { String
-	 * email=emailDto.getEmail(); String subject = "Verify your email"; String
-	 * message = "<html>" + "<body>" + "<p>Hello,</p>" +
-	 *
-	 * "<p>You receive this message either because you recently applied to, registered on our website, or are considered as a potential candidate for a job offered through our portal.</p>"
-	 * +
-	 *
-	 * "<p>Please validate your email address by clicking <a href=\"YOUR_VALIDATION_LINK\">here</a> (please log in using your existing credentials).<br>"
-	 * +
-	 * "This will take only a few seconds and is to make sure that the recruiters can safely reach you through email.</p>"
-	 * +
-	 *
-	 * "<p>Kind regards,<br>" + "Recruitment Team<br>" +
-	 * "Venture Consultancy Services, Lucknow</p>" +
-	 *
-	 * "</body>" + "</html>";
-	 *
-	 * //emailService.sendEmail(subject, message, email); boolean
-	 * res=emailService.sendEmail(subject, message, email); return res; }
+	 * public boolean checkEmailExists(OtpSignDTO otpSignDTO) { return
+	 * userRepository.existsByEmail(otpSignDTO); }
 	 */
+
 }

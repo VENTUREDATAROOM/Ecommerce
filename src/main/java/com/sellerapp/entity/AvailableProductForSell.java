@@ -1,9 +1,11 @@
 package com.sellerapp.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 
 
@@ -12,24 +14,41 @@ import javax.persistence.Id;
 public class AvailableProductForSell {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
+	
 	private String productName;
+	
 	private String productSubName;
+	
 	private String userCode;
+	//@Column(name="product_master_code")
 	private String productMasterCode;
-	private String ProductMasterSubCode;
+//	@Column(name="product_master_sub_code")
+	private String productMasterSubCode;
+	//@Column(name="mandi_name")
 	private String mandiName;
+	//@Column(name="quantity")
 	private String quantity;
+	//@Column(name="address")
 	private String address;
+	//@Column(name="expectedPrice")
 	private String expectedPrice;
+	//@Column(name="price")
 	private String totalPrice;
+	//@Column(name="location")
 	private String location;
+	//@Column(name="quality")
 	private String quality;
+	//@Column(name="distance_from_mandi")
 	private String distanceFromMandi;
+	//@Column(name="order_otp")
 	private String orderOtp;
+//	@Column(name="order_code")
 	private String orderCode;
+//	@Column(name="harvest_date")
 	private String harvestDate;
+	//@Column(name="transaction_id")
 	private String transactionId;
 	public Long getId() {
 		return id;
@@ -61,11 +80,12 @@ public class AvailableProductForSell {
 	public void setProductMasterCode(String productMasterCode) {
 		this.productMasterCode = productMasterCode;
 	}
+	
 	public String getProductMasterSubCode() {
-		return ProductMasterSubCode;
+		return productMasterSubCode;
 	}
 	public void setProductMasterSubCode(String productMasterSubCode) {
-		ProductMasterSubCode = productMasterSubCode;
+		this.productMasterSubCode = productMasterSubCode;
 	}
 	public String getMandiName() {
 		return mandiName;
@@ -143,7 +163,7 @@ public class AvailableProductForSell {
 	public String toString() {
 		return "AvailableProductForSell [id=" + id + ", productName=" + productName + ", productSubName="
 				+ productSubName + ", userCode=" + userCode + ", productMasterCode=" + productMasterCode
-				+ ", ProductMasterSubCode=" + ProductMasterSubCode + ", mandiName=" + mandiName + ", quantity="
+				+ ", ProductMasterSubCode=" + productMasterSubCode + ", mandiName=" + mandiName + ", quantity="
 				+ quantity + ", address=" + address + ", expectedPrice=" + expectedPrice + ", totalPrice=" + totalPrice
 				+ ", location=" + location + ", quality=" + quality + ", distanceFromMandi=" + distanceFromMandi
 				+ ", orderOtp=" + orderOtp + ", orderCode=" + orderCode + ", harvestDate=" + harvestDate
@@ -159,7 +179,7 @@ public class AvailableProductForSell {
 		this.productSubName = productSubName;
 		this.userCode = userCode;
 		this.productMasterCode = productMasterCode;
-		ProductMasterSubCode = productMasterSubCode;
+		this.productMasterSubCode = productMasterSubCode;
 		this.mandiName = mandiName;
 		this.quantity = quantity;
 		this.address = address;

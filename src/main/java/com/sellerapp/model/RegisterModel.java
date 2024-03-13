@@ -11,6 +11,15 @@ public class RegisterModel {
 	private String password;
 	private String baseImg;
 	private String contentType;
+	private String otp;
+
+	public String getOtp() {
+		return otp;
+	}
+
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
 
 	public String getBaseImg() {
 		return baseImg;
@@ -69,7 +78,7 @@ public class RegisterModel {
 	}
 
 	public RegisterModel(MultipartFile profileImage, String mobileNumber, String name, String email, String password,
-			String baseImg, String contentType) {
+			String baseImg,String otp, String contentType) {
 		super();
 		this.profileImage = profileImage;
 		this.mobileNumber = mobileNumber;
@@ -77,6 +86,7 @@ public class RegisterModel {
 		this.email = email;
 		this.password = password;
 		this.baseImg = baseImg;
+		this.otp=otp;
 		this.contentType = contentType;
 	}
 

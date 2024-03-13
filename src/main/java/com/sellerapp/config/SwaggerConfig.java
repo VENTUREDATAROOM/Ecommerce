@@ -16,7 +16,7 @@ public class SwaggerConfig {
 	public OpenAPI openAPI() {
 		return new OpenAPI().addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
 				.components(new Components().addSecuritySchemes("Bearer Authentication", createAPIKeyScheme()))
-				.info(new Info().title("ECOMMERCE'S API").description("used for mobile and web application").version("1.0"));
+				.info(new Info().title("SELLER APP API").description("used for mobile and web application").version("1.0"));
 	}
 
 	private SecurityScheme createAPIKeyScheme() {

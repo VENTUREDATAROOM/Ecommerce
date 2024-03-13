@@ -1,9 +1,11 @@
 package com.sellerapp.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 public class ProductForSell {
@@ -11,10 +13,15 @@ public class ProductForSell {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private long id;
+	//@Column(name = "product_name")
 	private String productName;
+	//@Column(name = "producft_sub_name")
 	private String productSubName;
+	//@Column(name = "product_master_code")
 	private String productMasterCode;
+	//@Column(name = "product_master_subcode")
 	private String productMasterSubCode;
+	//@Column(name = "product_final_code")
 	private String productFinalCode;
 
 	public long getId() {

@@ -10,4 +10,6 @@ public interface AvailableProductForSellRepository extends JpaRepository<Availab
 
 	List<AvailableProductForSell> findByProductMasterCode(String productMasterCode);
 
+	AvailableProductForSell findByOrderCode(String orderCode);
+
 }

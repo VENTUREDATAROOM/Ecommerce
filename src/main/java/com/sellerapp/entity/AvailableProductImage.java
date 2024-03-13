@@ -2,20 +2,26 @@ package com.sellerapp.entity;
 
 import java.util.Arrays;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 public class AvailableProductImage {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
+	//@Column(name = "order_code")
 	private String orderCode;
+	//@Column(name = "image_1")
 	private byte[] image1;
+	//@Column(name = "image_2")
 	private byte[] image2;
+//	@Column(name = "image_3")
 	private byte[] image3;
 
 	public Long getId() {

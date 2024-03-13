@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,15 +21,17 @@ import com.sellerapp.service.ProductForSellService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+
 @RestController
-@RequestMapping("/product")
-@Tag(name = "Product APIs")
+@CrossOrigin(origins = "*")
+@RequestMapping("api")
+@Tag(name = "Product-API")
 public class ProductForSellController {
 
 	@Autowired
 	private ProductForSellService ProductForSellService;
 
-	@PostMapping("/add/productForSell")
+	@PostMapping(value="add/productForSell",consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
 	@Operation(summary = "API for add Product")
 	public String addDataOfProductForSell(@RequestParam("ProductName") String ProductName,
 			@RequestParam("ProductSubName") String ProductSubName,

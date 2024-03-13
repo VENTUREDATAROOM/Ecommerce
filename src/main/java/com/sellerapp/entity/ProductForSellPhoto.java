@@ -2,6 +2,7 @@ package com.sellerapp.entity;
 
 import java.util.Arrays;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,8 +14,11 @@ public class ProductForSellPhoto {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
+	//@Column(name = "product_master_subcode")
 	private String productMasterSubCode;
+	//@Column(name = "product_master_code")
 	private String productMasterCode;
+	//@Column(name = "product_image")
 	private byte[] productImage;
 
 	public Long getId() {
