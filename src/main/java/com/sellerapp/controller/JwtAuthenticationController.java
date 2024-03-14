@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -30,10 +31,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sellerapp.config.JwtTokenUtil;
+import com.sellerapp.entity.GdmsApiUsers;
 import com.sellerapp.model.JwtRequest;
+import com.sellerapp.model.JwtResponse;
+import com.sellerapp.model.JwtWithUserCodeResponse;
 import com.sellerapp.model.Response2;
 import com.sellerapp.model.ResponseForToken;
 import com.sellerapp.model.ResponseWithObject;
+import com.sellerapp.repository.GdmsApiRepository;
 import com.sellerapp.service.JwtUserDetailsService;
 import com.sellerapp.service.MobileService;
 
@@ -46,6 +51,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/auth")
 @Tag(name = "Login-API")
 public class JwtAuthenticationController {
+	
+	
+	@Autowired
+	private GdmsApiRepository gdmsRepository;
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -92,13 +101,23 @@ public class JwtAuthenticationController {
 
 			final UserDetails userDetails = jwtUserDetailsService.loadUserByOtp(authenticationRequest.getMobileNumber(),
 					authenticationRequest.getOtpgen());
-
+			
+			
 			final String token = jwtTokenUtil.generateToken(userDetails);
 			jwtUserDetailsService.setloginHistory(authenticationRequest, token);
 			mobileService.restOtp(authenticationRequest);
-
+		
+			
+			Optional<GdmsApiUsers> userOptional = this.gdmsRepository.findByMobileNumber(authenticationRequest.getMobileNumber());
+            
+			GdmsApiUsers dataOfuser = userOptional.get();
+	
 			if (token != null) {
-				return ResponseForToken.generateResponse(token, HttpStatus.OK, "200");
+				JwtWithUserCodeResponse r=new JwtWithUserCodeResponse();
+				r.setToken(token);
+				r.setUserCode(dataOfuser.getUserCode());
+				return new ResponseEntity<JwtWithUserCodeResponse>(r,HttpStatus.OK);
+				//return ResponseForToken.generateResponse(token,HttpStatus.OK,"200");
 			} else {
 				return ResponseForToken.generateResponse("", HttpStatus.INTERNAL_SERVER_ERROR, "500");
 			}

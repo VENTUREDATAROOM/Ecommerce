@@ -34,11 +34,11 @@ public class AvailableProductForSellController {
 	@Autowired
 	private AvailableProductForSellService AvailableProductForSellservice;
 
-	@PostMapping(value="/add/productForSell/{UserCode}",consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PostMapping(value="/add/productForSell/placed",consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
 	@Operation(summary = "API for Placed Order")
 	public ResponseEntity<?> addAvailableProductForSell(@RequestParam("ListImage") List<MultipartFile> ImageData,
 			@RequestParam("data") String FormData, @RequestParam("ProductMasterSubCode") String ProductMasterSubCode,
-			@PathVariable("UserCode") String UserCode) {
+			@RequestParam("UserCode") String UserCode) {
 
 		ObjectMapper Object = new ObjectMapper();
 		AvailableProductResponse ResponseToUser = new AvailableProductResponse();
