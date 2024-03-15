@@ -76,7 +76,9 @@ public class AvailableProductForSellService {
 					+ newStr.substring(14, 16) + newStr.substring(17, 19) + newStr.substring(20);
 			FormDataEntity.setTransactionId(transactionId);
 			FormDataEntity.setDistanceFromMandi(ProductData.getDistanceFromMandi());
-
+           
+			FormDataEntity.setStatus("Created");
+			
 			FormDataEntity.setUserCode(UserCode);
 			AvailableProductForSell ResponseData = this.AvailableProductRepo.save(FormDataEntity);
 
@@ -248,6 +250,93 @@ public class AvailableProductForSellService {
 		}
 
 	}
+	
+	
+	public List<AvailableProductForSellResponse> getallAvailableProductDataByuserCode(String UserCode) {
+
+		List<AvailableProductForSell> ProductData = this.AvailableProductRepo
+				.findByUserCode(UserCode);
+		List<AvailableProductForSellResponse> ResponseListData = new ArrayList<>();
+
+		try {
+
+			for (AvailableProductForSell item : ProductData) {
+				AvailableProductForSellResponse ResponseData = new AvailableProductForSellResponse();
+				ResponseData.setProductName(item.getProductName());
+				ResponseData.setProductSubName(item.getProductSubName());
+				ResponseData.setUserCode(item.getUserCode());
+				ResponseData.setProductMasterCode(item.getProductMasterCode());
+				ResponseData.setProductMasterSubCode(item.getProductMasterSubCode());
+				ResponseData.setMandiName(item.getMandiName());
+				ResponseData.setQuality(item.getQuality());
+				ResponseData.setExpectedPrice(item.getExpectedPrice());
+				ResponseData.setTotalPrice(item.getTotalPrice());
+				ResponseData.setLocation(item.getLocation());
+				ResponseData.setDistanceFromMandi(item.getDistanceFromMandi());
+				ResponseData.setOrderCode(item.getOrderCode());
+				ResponseData.setOrderOtp(item.getOrderOtp());
+				ResponseData.setAddress(item.getAddress());
+				ResponseData.setHarvestDate(item.getHarvestDate());
+				ResponseData.setTransactionId(item.getTransactionId());
+				ResponseData.setQuantity(item.getQuantity());
+				List<String> ImageData = GetImageBase64(item.getOrderCode());
+				ResponseData.setImageData(ImageData);
+
+				ResponseListData.add(ResponseData);
+			}
+			return ResponseListData;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+	
+	public List<AvailableProductForSellResponse> getallAvailableProductDataWhichSold(String UserCode) {
+
+		List<AvailableProductForSell> ProductData = this.AvailableProductRepo
+				.findByUserCode(UserCode);
+		List<AvailableProductForSellResponse> ResponseListData = new ArrayList<>();
+
+		try {
+
+			for (AvailableProductForSell item : ProductData) {
+				
+				if(item.getStatus().equals("completed")) {
+					
+				AvailableProductForSellResponse ResponseData = new AvailableProductForSellResponse();
+				ResponseData.setProductName(item.getProductName());
+				ResponseData.setProductSubName(item.getProductSubName());
+				ResponseData.setUserCode(item.getUserCode());
+				ResponseData.setProductMasterCode(item.getProductMasterCode());
+				ResponseData.setProductMasterSubCode(item.getProductMasterSubCode());
+				ResponseData.setMandiName(item.getMandiName());
+				ResponseData.setQuality(item.getQuality());
+				ResponseData.setExpectedPrice(item.getExpectedPrice());
+				ResponseData.setTotalPrice(item.getTotalPrice());
+				ResponseData.setLocation(item.getLocation());
+				ResponseData.setDistanceFromMandi(item.getDistanceFromMandi());
+				ResponseData.setOrderCode(item.getOrderCode());
+				ResponseData.setOrderOtp(item.getOrderOtp());
+				ResponseData.setAddress(item.getAddress());
+				ResponseData.setHarvestDate(item.getHarvestDate());
+				ResponseData.setTransactionId(item.getTransactionId());
+				ResponseData.setQuantity(item.getQuantity());
+				List<String> ImageData = GetImageBase64(item.getOrderCode());
+				ResponseData.setImageData(ImageData);
+
+				ResponseListData.add(ResponseData);
+				}
+			}
+			return ResponseListData;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+	
+	
 
 	public List<String> GetImageBase64(String availableCode) {
 		AvailableProductImage ProductImage = this.availableProductImagerepo.findByOrderCode(availableCode);

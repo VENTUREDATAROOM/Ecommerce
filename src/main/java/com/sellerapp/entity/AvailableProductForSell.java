@@ -50,6 +50,8 @@ public class AvailableProductForSell {
 	private String harvestDate;
 	//@Column(name="transaction_id")
 	private String transactionId;
+	
+	private String status;
 	public Long getId() {
 		return id;
 	}
@@ -159,20 +161,16 @@ public class AvailableProductForSell {
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
 	}
-	@Override
-	public String toString() {
-		return "AvailableProductForSell [id=" + id + ", productName=" + productName + ", productSubName="
-				+ productSubName + ", userCode=" + userCode + ", productMasterCode=" + productMasterCode
-				+ ", ProductMasterSubCode=" + productMasterSubCode + ", mandiName=" + mandiName + ", quantity="
-				+ quantity + ", address=" + address + ", expectedPrice=" + expectedPrice + ", totalPrice=" + totalPrice
-				+ ", location=" + location + ", quality=" + quality + ", distanceFromMandi=" + distanceFromMandi
-				+ ", orderOtp=" + orderOtp + ", orderCode=" + orderCode + ", harvestDate=" + harvestDate
-				+ ", transactionId=" + transactionId + "]";
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	public AvailableProductForSell(Long id, String productName, String productSubName, String userCode,
 			String productMasterCode, String productMasterSubCode, String mandiName, String quantity, String address,
 			String expectedPrice, String totalPrice, String location, String quality, String distanceFromMandi,
-			String orderOtp, String orderCode, String harvestDate, String transactionId) {
+			String orderOtp, String orderCode, String harvestDate, String transactionId, String status) {
 		super();
 		this.id = id;
 		this.productName = productName;
@@ -192,11 +190,23 @@ public class AvailableProductForSell {
 		this.orderCode = orderCode;
 		this.harvestDate = harvestDate;
 		this.transactionId = transactionId;
+		this.status = status;
 	}
 	public AvailableProductForSell() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	@Override
+	public String toString() {
+		return "AvailableProductForSell [id=" + id + ", productName=" + productName + ", productSubName="
+				+ productSubName + ", userCode=" + userCode + ", productMasterCode=" + productMasterCode
+				+ ", productMasterSubCode=" + productMasterSubCode + ", mandiName=" + mandiName + ", quantity="
+				+ quantity + ", address=" + address + ", expectedPrice=" + expectedPrice + ", totalPrice=" + totalPrice
+				+ ", location=" + location + ", quality=" + quality + ", distanceFromMandi=" + distanceFromMandi
+				+ ", orderOtp=" + orderOtp + ", orderCode=" + orderCode + ", harvestDate=" + harvestDate
+				+ ", transactionId=" + transactionId + ", status=" + status + "]";
+	}
+	
 	
 	
 

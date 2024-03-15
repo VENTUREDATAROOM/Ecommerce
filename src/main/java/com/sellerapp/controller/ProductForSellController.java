@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("api")
-@Tag(name = "Product-API")
+@Tag(name = "Product-APIs")
 public class ProductForSellController {
 
 	@Autowired
@@ -99,5 +99,7 @@ public class ProductForSellController {
 		}
 
 	}
+	
+	
 
 }
