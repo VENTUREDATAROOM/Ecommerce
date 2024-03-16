@@ -22,7 +22,8 @@ public class ProfileService {
 		{
 		ProfileEntity profileEntity=new ProfileEntity();
 		profileEntity.setDateofbirth(pro.getDateofbirth());
-		profileEntity.setProfilePic(pro.getProfilePic());
+		profileEntity.setProfilePic(pro.getProfilePic().getBytes());
+		profileEntity.setUserCode(pro.getUserCode());
 		profileRepo.save(profileEntity);
 		return "Success";
 		} catch(Exception e)

@@ -7,4 +7,6 @@ import com.sellerapp.entity.PancardEntity;
 public interface PancardRepo extends JpaRepository<PancardEntity,Long>
 {
   PancardEntity findByPancardNumber(String pancardNumber);
+
+PancardEntity findByUserCode(String userCode);
 }

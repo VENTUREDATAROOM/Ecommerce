@@ -85,19 +85,20 @@ public class PasswordService {
 	public String otpBySign(ForgetPasswordDTO forgetPasswordDTO) {
 		try {
 			{
-				String userCode = forgetPasswordDTO.getUserCode();
-				if (userCode == null) {
-					return "Usercode is required";
+				//String userCode = forgetPasswordDTO.getUserCode();
+				String username=forgetPasswordDTO.getUsername();
+				if (username == null) {
+					return "Username is required";
 				} else {
-
-					GdmsApiUsers t = gdmsRepository.findByUserCode(userCode);
-					if (t != null) {
+                 Optional<GdmsApiUsers> tOptional=gdmsRepository.findByMobileNumber(username);
+					//GdmsApiUsers t = gdmsRepository.findByUserCode(userCode);
+					if (tOptional.isPresent()) {
 
 						String otp = generateRandomOtp();
-
+                        
 						OtpEntity oe = new OtpEntity();
-						oe.setUserCode(userCode);
-						oe.setUsername(t.getMobileNumber());
+						oe.setUserCode(tOptional.get().getUserCode());
+						oe.setUsername(username);
 						oe.setOtp(otp);
 
 						LocalDateTime currentDateTime = LocalDateTime.now();
@@ -115,10 +116,10 @@ public class PasswordService {
 
 						userRepository.save(oe);
 
-						log.info("Otp sign in " + userCode);
+						log.info("Otp sign in " + username);
 						return otp;
 					} else {
-						log.error("User not found with userCode: " + userCode);
+						log.error("User not found with userCode: " + username);
 						return "User not found";
 					}
 				}
@@ -135,7 +136,7 @@ public class PasswordService {
 		return String.valueOf(otpValue);
 	}
 
-	public String verifyOtp(VerifyOtpDTO verifyOtpDTO) {
+	/*public String verifyOtp(VerifyOtpDTO verifyOtpDTO) {
 		try {
 			String userCode = verifyOtpDTO.getUserCode();
 			String otp = verifyOtpDTO.getOtp();
@@ -143,16 +144,31 @@ public class PasswordService {
 			if (userCode == null || otp == null) {
 				return "Missing required fields: userCode and otp";
 			}
+           //Optional<GdmsApiUsers> userOptional=gdmsRepository.findByMobileNumber()
+			//Optional<GdmsApiUsers> userOptional = Optional.ofNullable(gdmsRepository.findByUserCode(userCode));
+			//if (!userOptional.isPresent()) {
+				//return "User not found";
+			//}
+			
+			//String actualUserCode=userOptional.get().getUserCode();
 
-			Optional<GdmsApiUsers> userOptional = Optional.ofNullable(gdmsRepository.findByUserCode(userCode));
-			if (!userOptional.isPresent()) {
-				return "User not found";
-			}
-
+			//Optional<OtpEntity> otpOptional = userRepository.findByUserCodeAndOtp(userCode, otp);
+			//if (!otpOptional.isPresent()) {
+				//return "No OTP found";
+			//}
 			Optional<OtpEntity> otpOptional = userRepository.findByUserCodeAndOtp(userCode, otp);
-			if (!otpOptional.isPresent()) {
-				return "No OTP found";
-			}
+	        if (!otpOptional.isPresent()) {
+	            // If OTP not found by user code, try finding by email
+	            Optional<GdmsApiUsers> userOptional = gdmsRepository.findByEmail(userCode);
+	            if (!userOptional.isPresent()) {
+	                return "User not found";
+	            }
+	            userCode = userOptional.get().getUserCode(); // Update user code
+	            otpOptional = userRepository.findByUserCodeAndOtp(userCode, otp); // Try finding OTP again
+	            if (!otpOptional.isPresent()) {
+	                return "No OTP found";
+	            }
+	        }
 
 			OtpEntity oe = otpOptional.get();
 
@@ -172,6 +188,76 @@ public class PasswordService {
 		} catch (Exception e) {
 			return "Error occurred while verifying OTP";
 		}
+	}*/
+	public String verifyOtp(VerifyOtpDTO verifyOtpDTO) {
+	    
+	        String userCode = verifyOtpDTO.getUserCode();
+	        String otp = verifyOtpDTO.getOtp();
+
+	        if (userCode == null || otp == null) {
+	            return "Missing required fields: userCode and otp";
+	        }
+
+	        Optional<OtpEntity> otpOptional = userRepository.findByUserCodeAndOtp(userCode, otp);
+	        
+	        
+	        //..............
+	        
+	        if (otpOptional.isPresent()) {
+                return "Success";
+            } else {
+                return "Invalid OTP: OTP has expired";
+            }
+	        
+	        
+	        
+	        
+	        //.................
+	        
+	        
+	        
+	        
+//	        if (!otpOptional.isPresent()) {
+//	            // If OTP not found by user code, try finding by email
+//	            Optional<GdmsApiUsers> userOptional;
+//	            if (verifyOtpDTO.getEmail() != null) {
+//	                userOptional = gdmsRepository.findByEmail(verifyOtpDTO.getEmail());
+//	            } else if (verifyOtpDTO.getUsername() != null) {
+//	                userOptional = gdmsRepository.findByMobileNumber(verifyOtpDTO.getUsername());
+//	            } else {
+//	                return "User not found";
+//	            }
+//
+//	            if (!userOptional.isPresent()) {
+//	                return "User not found";
+//	            }
+//
+//	            userCode = userOptional.get().getUserCode(); // Update user code
+//	            otpOptional = userRepository.findByUserCodeAndOtp(userCode, otp); // Try finding OTP again
+//	            if (!otpOptional.isPresent()) {
+//	                return "No OTP found";
+//	            }
+//	        }
+//
+//	        OtpEntity oe = otpOptional.get();
+//
+//	        if (oe.getOtpExpiry() != null) {
+//	            LocalDateTime otpExpiryDateTime = LocalDateTime.parse(oe.getOtpExpiry(),
+//	                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//	            LocalDateTime currentDateTime = LocalDateTime.now();
+//
+//	            if (otpExpiryDateTime.isAfter(currentDateTime)) {
+//	                return "Success";
+//	            } else {
+//	                return "Invalid OTP: OTP has expired";
+//	            }
+//	        } else {
+//	            return "Invalid OTP: OTP expiry information not found";
+//	        }
+//	    } catch (Exception e) {
+//	        return "Error occurred while verifying OTP";
+//	    }
 	}
+
 
 }

@@ -2,6 +2,7 @@ package com.sellerapp.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.Random;
 
 import org.modelmapper.ModelMapper;
@@ -30,21 +31,23 @@ public class OtpService {
 	ModelMapper mapper;
 
 	
-	public String otpByUserCode(OtpSignDTO otpSignDTO) {
+	public String otpByEmail(OtpSignDTO otpSignDTO) {
 		try {
-			String userCode = otpSignDTO.getUserCode();
-			if (userCode == null) {
-				return "Usercode is required";
+			String email = otpSignDTO.getEmail();
+			if (email == null) {
+				return "email is required";
 			} else {
-				GdmsApiUsers t = this.gdmsRepository.findByUserCode(userCode);
-				if (t != null) {
-					// GdmsApiUsers t = userOptional.get();
+				Optional<GdmsApiUsers> tOptional=this.gdmsRepository.findByEmail(email);
+				
+				if (tOptional.isPresent()) {
+					
 					String otp = generateRandomOtp();
 
 					OtpEntity oe = new OtpEntity();
-					oe.setUserCode(userCode);
-					oe.setEmail(t.getEmail());
+					oe.setUserCode(tOptional.get().getUserCode());
 					oe.setOtp(otp);
+					oe.setEmail(email);
+				
 
 					LocalDateTime currentDateTime = LocalDateTime.now();
 					LocalDateTime otpSendStringFormatted = currentDateTime.plusMinutes(1);
@@ -62,13 +65,13 @@ public class OtpService {
 
 					oe = userRepository.save(oe);
 
-					sendOtpByEmail(t.getEmail(), otp);
+					sendOtpByEmail(email, otp);
 
-					log.info("Otp sign in: {}{}", otpSignDTO.getUserCode());
+					log.info("Otp sign in: {}{}", email);
 
 					return otp;
 				} else {
-					log.error("User is not found with userCode:{}", otpSignDTO.getUserCode());
+					log.error("User is not found with userCode:{}", email);
 					return null;
 				}
 			}

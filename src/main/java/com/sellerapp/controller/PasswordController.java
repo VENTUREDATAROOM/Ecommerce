@@ -71,56 +71,94 @@ public class PasswordController {
 
 	}
 
-	@PostMapping(value = "/forgetByMob")
+	/*@PostMapping(value = "/forgetByMob")
 	@Operation(summary = "forget the password karne se otp jayega", description = "this api is used for forget the password yeh otp bhejaga")
 	public ResponseEntity<Object> forgetPassword(@RequestBody ForgetPasswordDTO forgetPasswordDTO) {
-
-		String otp = this.passwordService.otpBySign(forgetPasswordDTO);
+        //forgetPasswordDTO.getUsername();
+		//String userCode=forgetPasswordDTO.getUserCode();
+		String username=forgetPasswordDTO.getUsername();
+        String otp = this.passwordService.otpBySign(forgetPasswordDTO);
 
 		if (otp.equals("User not found") || otp.equals("Error")) {
 			return new ResponseWithObject().generateResponse("Error occurred: " + otp, HttpStatus.BAD_REQUEST, "400",
 					"");
 		} else {
 			ForgetPasswordDTO responseDTO = new ForgetPasswordDTO();
-			responseDTO.setUserCode(forgetPasswordDTO.getUserCode());
+			//responseDTO.setUserCode(forgetPasswordDTO.getUserCode());
+			//responseDTO.setUsername(forgetPasswordDTO.getUsername());
+			//responseDTO.setUserCode(forgetPasswordDTO.getUserCode());
+			responseDTO.setUsername(username);
 			responseDTO.setOtp(otp);
-			Optional<GdmsApiUsers> userOptional = Optional
-					.ofNullable(this.gdmsRepository.findByUserCode(forgetPasswordDTO.getUserCode()));
-			if (userOptional.isPresent()) {
-				responseDTO.setUsername(userOptional.get().getMobileNumber());
-			} else {
-				return new ResponseWithObject().generateResponse("User not found", HttpStatus.NOT_FOUND, "404", "");
-			}
+			
+			//Optional<GdmsApiUsers> userOptional = Optional
+					//.ofNullable(this.gdmsRepository.findByUserCode(forgetPasswordDTO.getUserCode()));
+			//GdmsApiUsers user=this.gdmsRepository.findByUserCode(forgetPasswordDTO.getUserCode());
+			//Optional<GdmsApiUsers> userOptional=this.gdmsRepository.findByMobileNumber(username);
+			// if (user != null) {
+		            responseDTO.setUserCode(forgetPasswordDTO.getUserCode());
+		            return new ResponseWithObject().generateResponse("Forget the password", HttpStatus.OK, "200", responseDTO);
+		       // } else {
+		           // return new ResponseWithObject().generateResponse("User not found", HttpStatus.NOT_FOUND, "404", "");
+		        }
+		}*/
+	@PostMapping(value = "/forgetByMob")
+	@Operation(summary = "Forget the password and send OTP", description = "This API is used for forgetting the password. OTP will be sent.")
+	public ResponseEntity<Object> forgetPassword(@RequestBody ForgetPasswordDTO forgetPasswordDTO) {
+	    String username = forgetPasswordDTO.getUsername();
+	    String otp = this.passwordService.otpBySign(forgetPasswordDTO);
 
-			return new ResponseWithObject().generateResponse("Forget the password", HttpStatus.OK, "200", responseDTO);
-		}
+	    if (otp.equals("User not found") || otp.equals("Error")) {
+	        return new ResponseWithObject().generateResponse("Error occurred: ", HttpStatus.BAD_REQUEST, "400", "");
+	    } else {
+	        // Fetch userCode based on the provided username
+	        Optional<GdmsApiUsers> userOptional = gdmsRepository.findByMobileNumber(username);
+	        if (userOptional.isPresent()) {
+	            String userCode = userOptional.get().getUserCode();
+
+	            // Prepare response DTO
+	            ForgetPasswordDTO responseDTO = new ForgetPasswordDTO();
+	            responseDTO.setUsername(username);
+	            responseDTO.setUserCode(userCode);
+	            responseDTO.setOtp(otp);
+
+	            // Return response
+	            return new ResponseWithObject().generateResponse("Forget the password", HttpStatus.OK, "200", responseDTO);
+	        } else {
+	            return new ResponseWithObject().generateResponse("User not found", HttpStatus.NOT_FOUND, "404", "");
+	        }
+	    }
 	}
+
+	
+	
+
 
 	@PostMapping(value = "/forgetByEmail")
 	@Operation(summary = "otp sign in through email")
 	public ResponseEntity<Object> sendEmail(@RequestBody OtpSignDTO otpSignDTO) {
-
-		String otp = otpService.otpByUserCode(otpSignDTO);
+      String email=otpSignDTO.getEmail();
+		String otp = otpService.otpByEmail(otpSignDTO);
 		if (otp.equals("User not found") || otp.equals("Error")) {
 			return new ResponseWithObject().generateResponse("Error occured ", HttpStatus.BAD_REQUEST, "400", "");
 		}
 
 		else {
-			OtpSignDTO response = new OtpSignDTO();
-			response.setUserCode(otpSignDTO.getUserCode());
+			Optional<GdmsApiUsers> userOptional = gdmsRepository.findByEmail(email);
+	        if (userOptional.isPresent()) {
+	            String userCode = userOptional.get().getUserCode();
 
-			response.setOtp(otp);
-			Optional<GdmsApiUsers> userOptional = Optional
-					.ofNullable(this.gdmsRepository.findByUserCode(otpSignDTO.getUserCode()));
-			if (userOptional.isPresent()) {
-				response.setEmail(userOptional.get().getEmail());
-			} else {
-				return new ResponseWithObject().generateResponse("User not found", HttpStatus.NOT_FOUND, "404", "");
-			}
+	            // Prepare response DTO
+	            OtpSignDTO responseDTO = new OtpSignDTO();
+	            responseDTO.setEmail(email);
+	            responseDTO.setUserCode(userCode);
+	            responseDTO.setOtp(otp);
 
-			return new ResponseWithObject().generateResponse("Email sent successfully through OTP", HttpStatus.OK,
-					"200", response);
-		}
+	            // Return response
+	            return new ResponseWithObject().generateResponse("Email sent successfully through OTP", HttpStatus.OK, "200", responseDTO);
+	        } else {
+	            return new ResponseWithObject().generateResponse("User not found", HttpStatus.NOT_FOUND, "404", "");
+	        }
+	    }
 	}
 
 	@PostMapping(value = "/forgetPasswordByVerifyEmail")
@@ -163,14 +201,15 @@ public class PasswordController {
 
 		if ("Success".equals(result)) {
 			return Response2.generateResponse("Otp verified successfully through user code", HttpStatus.OK, "200");
-		} else if ("Error".equals(result) || "User not found".equals(result) || "No OTP found".equals(result)) {
-			return Response2.generateResponse("There is an error for verify otp through usercode",
-					HttpStatus.BAD_REQUEST, "400");
-		} else {
+		} 
+		//else if ("Error".equals(result) || "No OTP found".equals(result)) {
+			//return Response2.generateResponse("There is an error for verify otp through usercode",
+				//	HttpStatus.BAD_REQUEST, "400");
+		//}
+	else {
 			return Response2.generateResponse("There is wrong otp through usercode", HttpStatus.INTERNAL_SERVER_ERROR,
 					"500");
 		}
 	}
 
 }
-

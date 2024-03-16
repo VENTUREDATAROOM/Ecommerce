@@ -2,7 +2,7 @@ package com.sellerapp.model;
 
 public class OtpSignDTO {
 
-	// private String username;
+	
 	private String userCode;
 	private String otp;
 	private String email;

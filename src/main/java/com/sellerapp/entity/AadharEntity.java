@@ -4,80 +4,82 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Table;
 import javax.persistence.Id;
-
+import javax.persistence.Table;
 
 @Entity
-@Table(name="aadhar_details")
+@Table(name = "aadhar_details")
 public class AadharEntity {
-	
-	
-	
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name="aadhar_id")
-	private Long Id;
-	@Column(name="aadhar_no")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "aadhar_id")
+	private Long id;
+	@Column(name = "aadhar_no")
 	private String aadharNumber;
+
+	@Column(name = "frontpage_pic")
+	private byte[] frontPage;
+
+	@Column(name = "backpage_pic")
+	private byte[] backPage;
 	
-	@Column(name="frontpage_pic")
-	private String frontPage;
-	
-	@Column(name="backpage_pic")
-	private String backPage;
+	private String userCode;
+
 	public Long getId() {
-		return Id;
+		return id;
 	}
+
 	public void setId(Long id) {
-		Id = id;
+		this.id = id;
 	}
+
 	public String getAadharNumber() {
 		return aadharNumber;
 	}
+
 	public void setAadharNumber(String aadharNumber) {
 		this.aadharNumber = aadharNumber;
 	}
-	public String getFrontPage() {
+
+	public byte[] getFrontPage() {
 		return frontPage;
 	}
-	public void setFrontPage(String frontPage) {
+
+	public void setFrontPage(byte[] frontPage) {
 		this.frontPage = frontPage;
 	}
-	public String getBackPage() {
+
+	public byte[] getBackPage() {
 		return backPage;
 	}
-	public void setBackPage(String backPage) {
+
+	public void setBackPage(byte[] backPage) {
 		this.backPage = backPage;
 	}
-	
+
 	public AadharEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public AadharEntity(Long id, String aadharNumber, String frontPage, String backPage) {
+
+	public String getUserCode() {
+		return userCode;
+	}
+
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+
+	public AadharEntity(Long id, String aadharNumber, byte[] frontPage, byte[] backPage, String userCode) {
 		super();
-		Id = id;
+		this.id = id;
 		this.aadharNumber = aadharNumber;
 		this.frontPage = frontPage;
 		this.backPage = backPage;
+		this.userCode = userCode;
 	}
-	
-	
-	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 
 }

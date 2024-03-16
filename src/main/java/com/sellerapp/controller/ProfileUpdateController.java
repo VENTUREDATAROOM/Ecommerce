@@ -1,5 +1,7 @@
 package com.sellerapp.controller;
 
+import java.util.Base64;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,8 +14,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sellerapp.entity.AadharEntity;
+import com.sellerapp.entity.BankDetailsEntity;
 import com.sellerapp.entity.GdmsApiUsers;
+import com.sellerapp.entity.PancardEntity;
+import com.sellerapp.entity.ProfileEntity;
+import com.sellerapp.model.ProfileGetDTO;
+import com.sellerapp.repository.AadharRepository;
+import com.sellerapp.repository.BankRepo;
 import com.sellerapp.repository.GdmsApiRepository;
+import com.sellerapp.repository.PancardRepo;
+import com.sellerapp.repository.ProfileRepo;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
@@ -25,14 +36,55 @@ public class ProfileUpdateController {
 	private GdmsApiRepository userRepo;
 	
 	
+	@Autowired
+	private AadharRepository aadharRepo;
+	
+	@Autowired
+	private PancardRepo pancardRepo;
+	
+	@Autowired
+	private BankRepo bankRepo;
+	
+	
+	@Autowired
+	private ProfileRepo profileRepo;
+	
 	
 	
 	@GetMapping("/get/UserData")
 	public ResponseEntity<?> getDataOfUser(@RequestParam("UserCode") String userCode){
 		
+		
 		try {	
+			
+			AadharEntity adharData = this.aadharRepo.findByUserCode(userCode);
+			PancardEntity panCardData = this.pancardRepo.findByUserCode(userCode);
+			BankDetailsEntity bankData = this.bankRepo.findByUserCode(userCode);
+			ProfileEntity profileData = this.profileRepo.findByUserCode(userCode);
 			GdmsApiUsers data = this.userRepo.findByUserCode(userCode);
-			return new ResponseEntity<GdmsApiUsers>(data,HttpStatus.OK);
+			
+			ProfileGetDTO ResponseData = new ProfileGetDTO();
+			
+			if(adharData!=null) {
+				ResponseData.setAadharNumber(adharData.getAadharNumber());
+			}
+			if(panCardData!=null) {
+				ResponseData.setPanCardNumber(panCardData.getPancardNumber());
+			}
+			
+			if(profileData!=null) {	
+				ResponseData.setDateOfBirth(profileData.getDateofbirth());
+			}
+			
+			ResponseData.setUserCode(data.getUserCode());
+			ResponseData.setImage( byteImageToBase64(data.getProfileImage()));
+			ResponseData.setMobileNumber(data.getMobileNumber());
+			ResponseData.setName(data.getName());
+			ResponseData.setEmail(data.getEmail());
+			ResponseData.setUserCode(userCode);
+			
+			
+			return new ResponseEntity<ProfileGetDTO>(ResponseData,HttpStatus.OK);
 			
 		} catch (Exception e) {
 			return new ResponseEntity<String>("Bad Request",HttpStatus.BAD_GATEWAY);
@@ -62,6 +114,18 @@ public class ProfileUpdateController {
 			return new ResponseEntity<String>("Opps! SomeThing wrong..! ",HttpStatus.BAD_GATEWAY);
 		}
 		
+	}
+	
+	
+	public static byte[] base64ToByteImage(String base64String) {
+		byte[] imageBytes = Base64.getDecoder().decode(base64String);
+		return imageBytes;
+	}
+
+	public static String byteImageToBase64(byte[] imageBytes) {
+		// Encode the byte array to Base64
+		String base64String = Base64.getEncoder().encodeToString(imageBytes);
+		return base64String;
 	}
 
 }

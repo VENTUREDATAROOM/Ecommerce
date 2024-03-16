@@ -6,4 +6,6 @@ import com.sellerapp.entity.ProfileEntity;
 public interface  ProfileRepo extends JpaRepository<ProfileEntity,Long>
 {
 
+	ProfileEntity findByUserCode(String userCode);
+
 }

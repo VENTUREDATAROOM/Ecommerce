@@ -1,37 +1,44 @@
 package com.sellerapp.model;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class PancardDTO {
-	// private String pancardNumber;
-	// private String[] pic;
 
-	private String name;
-	private String mobileNumber;
+	private String pancardNumber;
+	private MultipartFile pic;
+	private String basePan;
+	private String userCode;
 
-	public String getName() {
-		return name;
+	public String getPancardNumber() {
+		return pancardNumber;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public String getUserCode() {
+		return userCode;
 	}
 
-	public String getMobileNumber() {
-		return mobileNumber;
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
 	}
 
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
+	public void setPancardNumber(String pancardNumber) {
+		this.pancardNumber = pancardNumber;
 	}
 
-	/*
-	 * public String[] getPic() { return pic; }
-	 * 
-	 * public void setPic(String[] pic) { this.pic = pic; }
-	 * 
-	 * public String getPancardNumber() { return pancardNumber; }
-	 * 
-	 * public void setPancardNumber(String pancardNumber) { this.pancardNumber =
-	 * pancardNumber; }
-	 */
+	public MultipartFile getPic() {
+		return pic;
+	}
+
+	public void setPic(MultipartFile pic) {
+		this.pic = pic;
+	}
+
+	public String getBasePan() {
+		return basePan;
+	}
+
+	public void setBasePan(String basePan) {
+		this.basePan = basePan;
+	}
 
 }
