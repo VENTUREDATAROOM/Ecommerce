@@ -51,6 +51,10 @@ public class ProfileUpdateController {
 	
 	
 	
+	
+	
+	
+	
 	@GetMapping("/get/UserData")
 	public ResponseEntity<?> getDataOfUser(@RequestParam("UserCode") String userCode){
 		
@@ -83,6 +87,18 @@ public class ProfileUpdateController {
 			ResponseData.setEmail(data.getEmail());
 			ResponseData.setUserCode(userCode);
 			
+			if(adharData!=null) {
+				ResponseData.setProfileCompletion("40%");
+				if(panCardData!=null) {
+					ResponseData.setProfileCompletion("60%");
+					if(bankData!=null) {
+						ResponseData.setProfileCompletion("80%");
+						if(profileData!=null) {
+							ResponseData.setProfileCompletion("100%");
+						}
+					}
+				}
+			}
 			
 			return new ResponseEntity<ProfileGetDTO>(ResponseData,HttpStatus.OK);
 			

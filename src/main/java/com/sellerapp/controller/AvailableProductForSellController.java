@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api")
-@Tag(name = "Order-APIs")
+@Tag(name = "Order-API")
 public class AvailableProductForSellController {
 	
 	

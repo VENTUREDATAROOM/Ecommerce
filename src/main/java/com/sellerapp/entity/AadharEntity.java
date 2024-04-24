@@ -15,7 +15,7 @@ public class AadharEntity {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "aadhar_id")
 	private Long id;
-	@Column(name = "aadhar_no")
+	@Column(name = "aadhar_no" , unique = true)
 	private String aadharNumber;
 
 	@Column(name = "frontpage_pic")

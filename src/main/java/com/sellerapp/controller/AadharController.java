@@ -32,20 +32,19 @@ public class AadharController {
 	
 	
 	@Autowired
-	private GdmsApiRepository Gdmsrepo;
+	private GdmsApiRepository gdmsRepository;
 
 	@Autowired
 	AadharService aadharService;
 
 	@PostMapping(value = "/uploadAadhar", consumes = {
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
-
 	@Operation(summary = "upload aadhar card details")
-	public ResponseEntity<?> uploadAadhar(@ModelAttribute AadharDTO aadhar)
+	public ResponseEntity<?> uploadAadharNumberAndFront(@ModelAttribute AadharDTO aadhar)
 
 	{
 		
-		GdmsApiUsers userData = this.Gdmsrepo.findByUserCode(aadhar.getUserCode());
+		GdmsApiUsers userData = this.gdmsRepository.findByUserCode(aadhar.getUserCode());
 		if(userData==null) {
 			return new ResponseWithObject().generateResponse("userCode not Valid ..!!",
 					HttpStatus.INTERNAL_SERVER_ERROR, "500", "");
@@ -67,4 +66,8 @@ public class AadharController {
 		}
 
 	}
+	
+	
+	
+	
 }

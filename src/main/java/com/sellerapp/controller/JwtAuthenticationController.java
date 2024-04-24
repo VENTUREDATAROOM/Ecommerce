@@ -37,6 +37,7 @@ import com.sellerapp.model.JwtResponse;
 import com.sellerapp.model.JwtWithUserCodeResponse;
 import com.sellerapp.model.Response2;
 import com.sellerapp.model.ResponseForToken;
+import com.sellerapp.model.ResponseTokennn;
 import com.sellerapp.model.ResponseWithObject;
 import com.sellerapp.repository.GdmsApiRepository;
 import com.sellerapp.service.JwtUserDetailsService;
@@ -90,8 +91,44 @@ public class JwtAuthenticationController {
 			return ResponseForToken.generateResponse(" ", HttpStatus.INTERNAL_SERVER_ERROR, "500");
 		}
 	}
-
 	@PostMapping(value = "/verifyOtp")
+	@Operation(summary = "Username,password and OTP in JSON format  is required ")
+	public ResponseEntity<?> authenticatebyjsonnew(@RequestBody JwtRequest authenticationRequest) throws Exception {
+		try {
+			authenticate(authenticationRequest.getMobileNumber(), authenticationRequest.getPassword());
+			System.out.println("for login usrname:" + authenticationRequest.getMobileNumber() + "$$REQUESTBODYJSON$$"
+					+ authenticationRequest.getPassword() + "otp:-" + authenticationRequest.getOtpgen());
+
+			final UserDetails userDetails = jwtUserDetailsService.loadUserByOtp(authenticationRequest.getMobileNumber(),
+					authenticationRequest.getOtpgen());
+			
+			
+			final String token = jwtTokenUtil.generateToken(userDetails);
+			jwtUserDetailsService.setloginHistory(authenticationRequest, token);
+			mobileService.restOtp(authenticationRequest);
+		
+			
+			Optional<GdmsApiUsers> userOptional = this.gdmsRepository.findByMobileNumber(authenticationRequest.getMobileNumber());
+            
+			GdmsApiUsers dataOfuser = userOptional.get();
+	
+			if (token != null) {
+				JwtWithUserCodeResponse r=new JwtWithUserCodeResponse();
+				r.setToken(token);
+				r.setUserCode(dataOfuser.getUserCode());
+				//return new ResponseEntity<JwtWithUserCodeResponse>(r,HttpStatus.OK);
+				//return ResponseForToken.generateResponse(token,HttpStatus.OK,"200");
+				return ResponseTokennn.generateResponse(r,HttpStatus.OK,"200");
+			} else {
+				return ResponseForToken.generateResponse("", HttpStatus.INTERNAL_SERVER_ERROR, "500");
+			}
+		} catch (Exception e) {
+			return Response2.generateResponse("INVALID_CREDENTIALS ", HttpStatus.UNAUTHORIZED, "000");
+		}
+	}
+
+
+	/*@PostMapping(value = "/verifyOtp")
 	@Operation(summary = "Username,password and OTP in JSON format  is required ")
 	public ResponseEntity<?> authenticatebyjsonnew(@RequestBody JwtRequest authenticationRequest) throws Exception {
 		try {
@@ -124,7 +161,7 @@ public class JwtAuthenticationController {
 		} catch (Exception e) {
 			return Response2.generateResponse("INVALID_CREDENTIALS ", HttpStatus.UNAUTHORIZED, "000");
 		}
-	}
+	}*/
 
 	@PostMapping(value = "/loginByOtp", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, "image/jpeg",
 			"image/png" }, produces = MediaType.APPLICATION_JSON_VALUE)

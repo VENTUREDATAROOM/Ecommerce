@@ -10,6 +10,7 @@ public class ProfileGetDTO {
 	private String aadharNumber;
 	private String panCardNumber;
 	private String mobileNumber;
+	private String profileCompletion;
 	public String getName() {
 		return name;
 	}
@@ -58,8 +59,14 @@ public class ProfileGetDTO {
 	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
 	}
+	public String getProfileCompletion() {
+		return profileCompletion;
+	}
+	public void setProfileCompletion(String profileCompletion) {
+		this.profileCompletion = profileCompletion;
+	}
 	public ProfileGetDTO(String name, String email, String userCode, String dateOfBirth, String image,
-			String aadharNumber, String panCardNumber, String mobileNumber) {
+			String aadharNumber, String panCardNumber, String mobileNumber, String profileCompletion) {
 		super();
 		this.name = name;
 		this.email = email;
@@ -69,6 +76,7 @@ public class ProfileGetDTO {
 		this.aadharNumber = aadharNumber;
 		this.panCardNumber = panCardNumber;
 		this.mobileNumber = mobileNumber;
+		this.profileCompletion = profileCompletion;
 	}
 	public ProfileGetDTO() {
 		super();
@@ -78,7 +86,7 @@ public class ProfileGetDTO {
 	public String toString() {
 		return "ProfileGetDTO [name=" + name + ", email=" + email + ", userCode=" + userCode + ", dateOfBirth="
 				+ dateOfBirth + ", image=" + image + ", aadharNumber=" + aadharNumber + ", panCardNumber="
-				+ panCardNumber + ", mobileNumber=" + mobileNumber + "]";
+				+ panCardNumber + ", mobileNumber=" + mobileNumber + ", profileCompletion=" + profileCompletion + "]";
 	}
 	
 	
